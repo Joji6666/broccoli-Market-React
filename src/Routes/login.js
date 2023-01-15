@@ -1,55 +1,39 @@
 import React, { useState } from "react";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
-import { app, db } from "../firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { doc, setDoc } from "firebase/firestore";
+
 import { useNavigate } from "react-router-dom";
 
-export default function Auth() {
+export default function Login() {
   const auth = getAuth();
   const nav = useNavigate();
-  const [username, setUsername] = useState("");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  //회원가입 코드
-  const createUser = async () => {
-    await createUserWithEmailAndPassword(auth, email, password)
+  //로그인 코드
+  const userLogin = async () => {
+    await signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
-        const userData = {
-          username,
-          email,
-        };
-
-        //                컬렉션   생성할 문서 이름    문서에 담을 내용
-        setDoc(doc(db, "user", result.user.uid), userData).then(async () => {
-          updateProfile(result.user, { displayName: username });
-          console.log(result.user);
-          alert("회원가입이 완료됐습니다.");
-          await nav("/login");
-        });
+        alert("로그인 됐습니다.");
+        nav("/main");
       })
-      .catch(() => {
+      .catch((err) => {
         if (password.length < 6) {
           passwrodError();
         } else if (email === "") {
           emailError();
         }
+        toast.error("이메일과 패스워드를 확인해주세요.");
       });
   };
 
   const passwrodError = () => toast.error("비밀먼호를 6자 이상 입력해주세요.");
   const emailError = () => toast.error("이메일을 확인해주세요.");
 
-  const usernameInput = (e) => {
-    setUsername(e.target.value);
-  };
   const emailInput = (e) => {
     setEmail(e.target.value);
   };
@@ -59,11 +43,6 @@ export default function Auth() {
 
   return (
     <>
-      <input
-        type="text"
-        placeholder="이름을 입력해주세요."
-        onChange={usernameInput}
-      />
       <input
         type="email"
         placeholder="이메일을 입력해주세요."
@@ -75,7 +54,7 @@ export default function Auth() {
         onChange={passwordInput}
       />
 
-      <button onClick={createUser}>회원가입</button>
+      <button onClick={userLogin}>로그인</button>
       <ToastContainer
         position="bottom-right"
         autoClose={5000}
