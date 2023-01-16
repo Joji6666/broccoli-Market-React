@@ -1,3 +1,25 @@
 .product-iamge {
   max-width: 200px;
+  width: 100%;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+}
+
+.thumbnail {
+  width: 200px;
+  height: 200px;
+  border-radius: 20px;
+  background-size: cover;
+  margin: 5px;
+}
+
+.product-container {
+  border-bottom: 1px solid gray;
+  margin: 20px;
+  width: 800px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }

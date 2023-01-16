@@ -64,7 +64,7 @@ export default function Upload() {
         console.log(storageRef);
 
         //             올릴곳     올릴 파일
-        await uploadBytes(storageRef, image).then(async (snapshot) => {
+        await uploadBytes(storageRef, data).then(async (snapshot) => {
           //파일 url 가져오기
           await getDownloadURL(snapshot.ref).then(async (url) => {
             console.log("업로드 된 경로는", url);
