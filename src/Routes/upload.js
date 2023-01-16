@@ -1,7 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { async } from "q";
 
 import React, { useEffect, useState } from "react";
 import { db, storage } from "../firebase";
@@ -35,41 +34,50 @@ export default function Upload() {
 
   const imageUrl = [];
 
-  const upload = async () => {
-    // 유사 배열에 반복문 활용하는법
-    await [].map.call(image, async (data) => {
-      //이미지 업로드 코드             스토리지에 어떤곳에 저장하고 무슨 이름으로 저장할지
-      const storageRef = ref(storage, `image/${data.name}`);
+  // for of 방식
+  const imgUpload2 = async () => {
+    for (const forImage of image) {
+      const storageRef = await ref(storage, `image/${forImage.name}`);
       console.log(storageRef);
 
-      // 올릴곳       올릴 파일
+      //             올릴곳     올릴 파일
       await uploadBytes(storageRef, image).then(async (snapshot) => {
         //파일 url 가져오기
         await getDownloadURL(snapshot.ref).then(async (url) => {
           console.log("업로드 된 경로는", url);
           await imageUrl.push(url);
-
           console.log(imageUrl);
         });
       });
-    });
-
-    await Promise.all();
+    }
   };
 
-  addDoc(collection(db, "product"), {
-    title,
-    price,
-    content,
-    imageUrl,
-    seller,
-    sellerUid,
-    date: new Date(),
-  }).then(() => {
-    console.log("파일 업로드 완료");
-  });
+  //mpa+Promise.all 방식
 
-  const upload2 = () => {
+  const imgUpload = async () => {
+    await Promise.all(
+      // 유사 배열에 반복문 활용하는법
+
+      await [].map.call(image, async (data) => {
+        //이미지 업로드 코드             스토리지에 어떤곳에 저장하고 무슨 이름으로 저장할지
+        const storageRef = await ref(storage, `image/${data.name}`);
+        console.log(storageRef);
+
+        //             올릴곳     올릴 파일
+        await uploadBytes(storageRef, image).then(async (snapshot) => {
+          //파일 url 가져오기
+          await getDownloadURL(snapshot.ref).then(async (url) => {
+            console.log("업로드 된 경로는", url);
+            await imageUrl.push(url);
+            console.log(imageUrl);
+          });
+        });
+      })
+    );
+  };
+
+  const setProduct = async () => {
+    console.log(imageUrl);
     addDoc(collection(db, "product"), {
       title,
       price,
@@ -77,10 +85,22 @@ export default function Upload() {
       imageUrl,
       seller,
       sellerUid,
-      date: new Date(),
-    }).then(() => {
-      console.log("파일 업로드 완료");
+      date: new Date().toString(),
+    }).then((result) => {
+      console.log(result);
+      console.log("업로드완료");
     });
+  };
+
+  const upload = async () => {
+    try {
+      await imgUpload();
+
+      await setProduct();
+      console.log("업로드완료");
+    } catch {
+      console.log("업로드 실패");
+    }
   };
 
   return (
@@ -117,8 +137,7 @@ export default function Upload() {
         multiple
         onChange={imageFilesHandler}
       />
-      <button onClick={upload}>이미지 업로드</button>
-      <button onClick={upload2}>파일 업로드</button>
+      <button onClick={upload}>업로드</button>
     </div>
   );
 }
