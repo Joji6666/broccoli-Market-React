@@ -22,6 +22,7 @@ export default function Market() {
   return (
     <>
       <h1>상세페이지</h1>
+
       {product.map((data) => {
         return (
           <div className="product-container">
