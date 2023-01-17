@@ -23,10 +23,12 @@ export default function Detail() {
   }, []);
 
   useEffect(() => {
+    //              market 컴포넌트에서 Link를 이용하여 url에 업로드 된 문서의 id를 입력받도록했다.
     //                       url 에서 id값 가져오는 코드
     const query = new URLSearchParams(window.location.search);
 
     const docRef = doc(db, "product", query.get("id"));
+
     const getProduct = getDoc(docRef);
     getProduct.then((data) => {
       console.log(data.data());
@@ -38,6 +40,7 @@ export default function Detail() {
   console.log(productData);
 
   const query = new URLSearchParams(window.location.search);
+  //채팅방 컬렉션에 문서 추가 코드
   const joinChatRoom = () => {
     addDoc(collection(db, "chatroom"), {
       user: [productData.sellerUid, userUid],

@@ -27,7 +27,7 @@ export default function Auth() {
           email,
         };
 
-        //                컬렉션   생성할 문서 이름    문서에 담을 내용
+        //         저장할 컬렉션 이름  생성할 문서 이름    문서에 담을 내용
         setDoc(doc(db, "user", result.user.uid), userData).then(async () => {
           updateProfile(result.user, { displayName: username });
           console.log(result.user);
