@@ -62,12 +62,12 @@ export default function Chat() {
   };
 
   //채팅 메세지를 파이어스토어 db에 전송하는 코드
-  const sendMessage = () => {
+  const sendMessage = async () => {
     //chatroon 컬렉션에 현재 설정된 chatRoomid를 참조하는법
     //chatroom 지역을 클릭하면 setChatRoomid를 이용하여 chatRoomid가 설정된다.
-    const docRef = doc(db, "chatroom", chatRoomid);
+    const docRef = await doc(db, "chatroom", chatRoomid);
 
-    getDoc(docRef).then((snapshot) => {
+    await getDoc(docRef).then(async (snapshot) => {
       //Firestore에서 필드는 문서로 치지 않는다.
       //문서는 데이터를 가지고 있는 것이고 필드는 문서에 포함된 데이터를 구성하는 것이다.
       //예를 들어, 가져온 문서에서 name, age, address라는 필드가 있다면, 그것들은 그 문서에 포함된 데이터를 구성하는 것이다.
@@ -77,7 +77,7 @@ export default function Chat() {
       //문서에 데이터를 처음 추가할 때 암묵적으로 컬렉션과 문서를 생성한다.
       //이를 이용하여 chatroom에 하위 컬렉션으로 messages를 만들고 문서를 생성할 수 있다.
 
-      const messageRef = addDoc(collection(docRef, "messages"), {
+      const messageRef = await addDoc(collection(docRef, "messages"), {
         content: chatContent,
         author: username,
         date: new Date().toString(),
@@ -95,24 +95,20 @@ export default function Chat() {
   // });
 
   useDidMountEffect(async () => {
-    // data값 받을 빈 배열 변수 선언
-    const chatDataArray = [];
     //messages 컬렉션까지 접근
     const chatRoomRef = collection(db, "chatroom");
     const chatRoomDoc = doc(chatRoomRef, chatRoomid);
-    const query = collection(chatRoomDoc, "messages");
-    const snapshot = getDocs(query);
+    const messagesRef = collection(chatRoomDoc, "messages");
 
-    snapshot.then(async (data) => {
-      await Promise.all(
-        data.docs.map(async (data) => {
-          //messages 에 있는 문서들 반복문 돌려서 chatData 배열에 push
-          await chatDataArray.push(data.data());
-          // 그 후 chatData state에 추가
-          await setCahtData(chatDataArray);
-        })
-      );
+    //시간으로 정렬
+    const q = query(messagesRef, orderBy("date", "asc"));
+
+    // 실시간으로 messages 컬렉션에 있는 문서들을 가져온다.
+    onSnapshot(q, async (data) => {
+      // 그 후 그 배열들을 state에 넣는다.
+      setCahtData(data.docs.map((doc) => doc.data()));
     });
+
     console.log(chatData);
     console.log(chatRoomid);
 
