@@ -41,7 +41,7 @@ export default function Detail() {
 
   const query = new URLSearchParams(window.location.search);
   //채팅방 컬렉션에 문서 추가 코드
-  const joinChatRoom = () => {
+  const joinChatRoom = () => {  
     addDoc(collection(db, "chatroom"), {
       user: [productData.sellerUid, userUid],
       username: [productData.seller, username],

@@ -22,7 +22,6 @@ export default function Chat() {
   const [chatRoomid, setChatRoomId] = useState("");
   const [chatData, setCahtData] = useState([]);
   const [chatContent, setChatContent] = useState("");
-  const [chatSwitch, setChatSwitch] = useState(false);
 
   useEffect(() => {
     //로그인 상태 관리 코드
@@ -97,8 +96,7 @@ export default function Chat() {
 
   useDidMountEffect(async () => {
     // data값 받을 빈 배열 변수 선언
-    const chatData = [];
-
+    const chatDataArray = [];
     //messages 컬렉션까지 접근
     const chatRoomRef = collection(db, "chatroom");
     const chatRoomDoc = doc(chatRoomRef, chatRoomid);
@@ -107,18 +105,18 @@ export default function Chat() {
 
     snapshot.then(async (data) => {
       await Promise.all(
-        await data.docs.map(async (data) => {
+        data.docs.map(async (data) => {
           //messages 에 있는 문서들 반복문 돌려서 chatData 배열에 push
-          await chatData.push(data.data());
+          await chatDataArray.push(data.data());
+          // 그 후 chatData state에 추가
+          await setCahtData(chatDataArray);
         })
       );
     });
     console.log(chatData);
     console.log(chatRoomid);
-    // 그 후 chatData state에 추가
-    await setCahtData(chatData);
+
     console.log(chatData);
-    setChatSwitch(true);
   }, [chatRoomid]);
 
   return (
@@ -146,18 +144,16 @@ export default function Chat() {
           );
         })}
         <div className="content-container">
-          {chatSwitch === true
-            ? chatData.map((data) => {
-                return (
-                  <>
-                    {console.log(data)}
-                    <div>보낸 사람:{data.author}</div>
-                    <div>내용:{data.content}</div>
-                    <div>시간:{data.date}</div>
-                  </>
-                );
-              })
-            : null}
+          {chatData.map((data) => {
+            return (
+              <>
+                {console.log(data)}
+                <div>보낸 사람:{data.author}</div>
+                <div>내용:{data.content}</div>
+                <div>시간:{data.date}</div>
+              </>
+            );
+          })}
         </div>
         <input className="chat-content" onChange={chatHandler}></input>
         <button onClick={sendMessage}>전송</button>
