@@ -2,18 +2,17 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
   collection,
-  collectionGroup,
   doc,
   getDoc,
   getDocs,
   onSnapshot,
   orderBy,
   query,
-  setDoc,
   where,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
+import useDidMountEffect from "../usedidmounteffect";
 
 export default function Chat() {
   const auth = getAuth();
@@ -23,6 +22,7 @@ export default function Chat() {
   const [chatRoomid, setChatRoomId] = useState("");
   const [chatData, setCahtData] = useState([]);
   const [chatContent, setChatContent] = useState("");
+  const [chatSwitch, setChatSwitch] = useState(false);
 
   useEffect(() => {
     //로그인 상태 관리 코드
@@ -67,59 +67,58 @@ export default function Chat() {
     //chatroon 컬렉션에 현재 설정된 chatRoomid를 참조하는법
     //chatroom 지역을 클릭하면 setChatRoomid를 이용하여 chatRoomid가 설정된다.
     const docRef = doc(db, "chatroom", chatRoomid);
-    let messageRef;
 
     getDoc(docRef).then((snapshot) => {
-      //exists = 문서가 존재하는지 확인
-
       //Firestore에서 필드는 문서로 치지 않는다.
       //문서는 데이터를 가지고 있는 것이고 필드는 문서에 포함된 데이터를 구성하는 것이다.
       //예를 들어, 가져온 문서에서 name, age, address라는 필드가 있다면, 그것들은 그 문서에 포함된 데이터를 구성하는 것이다.
-      // 그리하여 docRef를 가져온 후 exists를 이용하여 문서가 존재하는지 확인하면 하위컬렉션이 있다면 그 안에 새로운 문서를 저장할 것이고
-      // 하위컬렉션이 존재하지 않는다면 messages라는 컬렉션을 생성함과 동시에 문서를 추가하도록 했다.
 
       //messages 컬렉션이 존재하지않으면 messages 컬렉션을 만듬과 동시에 문서를 추가한다.
-      if (!snapshot.exists) {
-        //문서에 데이터를 처음 추가할 때 암묵적으로 컬렉션과 문서를 생성한다.
-        //이를 이용하여 chatroom에 하위 컬렉션으로 messages를 만들고 문서를 생성할 수 있다.
-        messageRef = addDoc(collection(docRef, "messages"), {
-          content: chatContent,
-          author: username,
-          date: new Date().toString(),
-          authorUid: userUid,
-        });
-      }
-      // 이미 messages 컬렉션이 있다면 setDoc을 이용하여 문서만 추가한다.
-      else {
-        messageRef = doc(collection(docRef, "messages"));
-        setDoc(messageRef, {
-          content: chatContent,
-          author: username,
-          date: new Date().toString(),
-          authorUid: userUid,
-        });
-      }
+
+      //문서에 데이터를 처음 추가할 때 암묵적으로 컬렉션과 문서를 생성한다.
+      //이를 이용하여 chatroom에 하위 컬렉션으로 messages를 만들고 문서를 생성할 수 있다.
+
+      const messageRef = addDoc(collection(docRef, "messages"), {
+        content: chatContent,
+        author: username,
+        date: new Date().toString(),
+        authorUid: userUid,
+      });
     });
   };
 
-  //  chatroomId에 하위 컬렉션인 messages에서 데이터를 가져오고 date순으로 정렬 그 후  onSnapshot으로  실시간 데이터 반영
-  const collectionRef = async () => {
-    //chatroon 컬렉션에 현재 설정된 chatRoomid를 참조하는법
-    await doc(db, "chatroom", chatRoomid);
-    await query(collectionGroup(db, "messages"), where("user", "==", userUid));
-  };
+  //   const chatRoomRef = collection(db, "chatrooms").doc("chatroom1");
+  // const query = collection(chatRoomRef, "messages");
+  // const snapshot = getDocs(query);
 
-  useEffect(() => {
-    const queryMessages = query(
-      collectionGroup(db, "messages"),
-      where("user", "==", userUid)
-    );
-    const getMessages = getDocs(queryMessages).then((data) => {
-      console.log(data.docs);
+  // snapshot.then((data) => {
+  //     console.log(data.docs);
+  // });
+
+  useDidMountEffect(async () => {
+    // data값 받을 빈 배열 변수 선언
+    const chatData = [];
+
+    //messages 컬렉션까지 접근
+    const chatRoomRef = collection(db, "chatroom");
+    const chatRoomDoc = doc(chatRoomRef, chatRoomid);
+    const query = collection(chatRoomDoc, "messages");
+    const snapshot = getDocs(query);
+
+    snapshot.then(async (data) => {
+      await Promise.all(
+        await data.docs.map(async (data) => {
+          //messages 에 있는 문서들 반복문 돌려서 chatData 배열에 push
+          await chatData.push(data.data());
+        })
+      );
     });
-
-    console.log(queryMessages);
+    console.log(chatData);
     console.log(chatRoomid);
+    // 그 후 chatData state에 추가
+    await setCahtData(chatData);
+    console.log(chatData);
+    setChatSwitch(true);
   }, [chatRoomid]);
 
   return (
@@ -146,7 +145,20 @@ export default function Chat() {
             </>
           );
         })}
-        <div className="content-container"></div>
+        <div className="content-container">
+          {chatSwitch === true
+            ? chatData.map((data) => {
+                return (
+                  <>
+                    {console.log(data)}
+                    <div>보낸 사람:{data.author}</div>
+                    <div>내용:{data.content}</div>
+                    <div>시간:{data.date}</div>
+                  </>
+                );
+              })
+            : null}
+        </div>
         <input className="chat-content" onChange={chatHandler}></input>
         <button onClick={sendMessage}>전송</button>
       </div>
