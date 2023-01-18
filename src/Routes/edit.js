@@ -3,11 +3,12 @@ import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
 
 export default function Edit() {
   const auth = getAuth();
-
+  const nav = useNavigate();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [price, setPrice] = useState("");
@@ -79,6 +80,8 @@ export default function Edit() {
     }).then((result) => {
       console.log(result);
       console.log("수정 완료");
+      alert("수정됐습니다.");
+      nav("/mypage");
     });
   };
 

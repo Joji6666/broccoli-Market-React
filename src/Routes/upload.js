@@ -3,11 +3,12 @@ import { addDoc, collection } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
 
 export default function Upload() {
   const auth = getAuth();
-
+  const nav = useNavigate();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [price, setPrice] = useState("");
@@ -92,6 +93,8 @@ export default function Upload() {
     }).then((result) => {
       console.log(result);
       console.log("업로드완료");
+      alert("업로드 됐습니다.");
+      nav("/mypage");
     });
   };
 
