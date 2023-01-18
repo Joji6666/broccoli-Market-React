@@ -28,7 +28,7 @@ body {
   border-bottom: 1px solid gray;
   margin: 20px;
   width: 800px;
-  height: 300px;
+  height: 350px;
   display: flex;
   flex-direction: column;
   text-align: left;
@@ -51,4 +51,14 @@ body {
 .detail-image img {
   width: 500px;
   height: 500px;
+}
+.wish {
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+}
+
+.wish img {
+  width: 24px;
+  height: 24px;
 }

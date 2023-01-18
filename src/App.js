@@ -10,6 +10,8 @@ import Market from "./Routes/market";
 import Upload from "./Routes/upload";
 import Detail from "./Routes/detail";
 import Chat from "./Routes/chat";
+import Mypage from "./Routes/mypage";
+import Edit from "./Routes/edit";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/upload" element={<Upload />} />
         <Route path="/detail" element={<Detail />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/mypage" element={<Mypage />} />
+        <Route path="/edit" element={<Edit />} />
       </Routes>
     </div>
   );

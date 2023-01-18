@@ -1,12 +1,14 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { db } from "../firebase";
 import "../style.css";
 
 export default function Detail() {
   const auth = getAuth();
   const [productData, setProductData] = useState("");
+  const [productId, setProductId] = useState("");
   const [productImage, setProductImage] = useState([]);
   const [username, setUserName] = useState("");
   const [userUid, setUserUid] = useState("");
@@ -34,14 +36,16 @@ export default function Detail() {
       console.log(data.data());
       setProductData(data.data());
       setProductImage(data.data().imageUrl);
+      setProductId(data.id);
     });
   }, []);
   console.log(productImage);
   console.log(productData);
+  console.log(productId);
 
   const query = new URLSearchParams(window.location.search);
   //채팅방 컬렉션에 문서 추가 코드
-  const joinChatRoom = () => {  
+  const joinChatRoom = () => {
     addDoc(collection(db, "chatroom"), {
       user: [productData.sellerUid, userUid],
       username: [productData.seller, username],
@@ -75,6 +79,9 @@ export default function Detail() {
         <div className="date">{productData.date}</div>
       </div>
       <button onClick={joinChatRoom}>채팅</button>
+      <Link to={`/edit?id=${productId}`}>
+        <button>수정</button>
+      </Link>
     </>
   );
 }
