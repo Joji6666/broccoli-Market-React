@@ -83,6 +83,9 @@ export default function Detail() {
     const getChatRoom = getDocs(queryChatRoom);
 
     await getChatRoom.then((data) => {
+      // 판매자와 내 uid가 포함돼어있는 채팅방이 있으면
+      // data.docs.length는 1이 되므로 채팅방으로 이동한다.
+      // 채팅방이 없으면 채팅방을 생성한다.
       if (data.docs.length > 0) {
         console.log("채팅방 존재");
         nav("/chat");

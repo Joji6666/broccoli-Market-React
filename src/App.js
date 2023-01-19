@@ -12,10 +12,12 @@ import Detail from "./Routes/detail";
 import Chat from "./Routes/chat";
 import Mypage from "./Routes/mypage";
 import Edit from "./Routes/edit";
+import Navbar from "./layout/navbar";
 
 function App() {
   return (
     <div className="App">
+      <Navbar />
       <Routes>
         <Route path="/" element={<Intro />} />
         <Route path="/auth" element={<Auth />} />

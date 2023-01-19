@@ -3,6 +3,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
 
 import { db } from "../firebase";
+import { Link } from "react-router-dom";
+import "../style.css";
 
 export default function Mypage() {
   const auth = getAuth();
@@ -58,12 +60,14 @@ export default function Mypage() {
       {myProduct.map((data) => {
         return (
           <>
-            <div
-              className="thumbnail"
-              style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
-            ></div>
-            <div>상품명:{data.data().title}</div>
-            <div>상품가격:{data.data().price}</div>
+            <Link to={`/detail?id=${data.id}`}>
+              <div
+                className="thumbnail"
+                style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
+              ></div>
+              <div>상품명:{data.data().title}</div>
+              <div>상품가격:{data.data().price}</div>
+            </Link>
           </>
         );
       })}
@@ -71,12 +75,14 @@ export default function Mypage() {
       {myWish.map((data) => {
         return (
           <>
-            <div
-              className="thumbnail"
-              style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
-            ></div>
-            <div>상품명:{data.data().title}</div>
-            <div>상품가격:{data.data().price}</div>
+            <Link to={`/detail?id=${data.id}`}>
+              <div
+                className="thumbnail"
+                style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
+              ></div>
+              <div>상품명:{data.data().title}</div>
+              <div>상품가격:{data.data().price}</div>
+            </Link>
           </>
         );
       })}

@@ -82,50 +82,50 @@ export default function Market() {
 
   return (
     <>
-      <h1>상세페이지</h1>
+      <main>
+        {product.map((data) => {
+          // const likeUid = data.data().likeUid;
+          // let wish = "🤍";
+          // if (likeUid && likeUid.includes(userUid)) {
+          //   wish = "❤️";
+          // }
 
-      {product.map((data) => {
-        // const likeUid = data.data().likeUid;
-        // let wish = "🤍";
-        // if (likeUid && likeUid.includes(userUid)) {
-        //   wish = "❤️";
-        // }
-
-        return (
-          <div className="product-container">
-            <Link to={`/detail?id=${data.id}`}>
+          return (
+            <div className="product-container">
+              <Link to={`/detail?id=${data.id}`}>
+                <div
+                  className="thumbnail"
+                  style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
+                ></div>
+                <div>상품명:{data.data().title}</div>
+                <div>상품가격:{data.data().price}</div>
+                <div>판매자:{data.data().seller}</div>
+                <div>올린 날짜:{data.data().date}</div>
+              </Link>
               <div
-                className="thumbnail"
-                style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
-              ></div>
-              <div>상품명:{data.data().title}</div>
-              <div>상품가격:{data.data().price}</div>
-              <div>판매자:{data.data().seller}</div>
-              <div>올린 날짜:{data.data().date}</div>
-            </Link>
-            <div
-              onClick={() => {
-                setProductId(data.id);
-              }}
-              className="wish"
-            >
-              <img src={wishlist} />
+                onClick={() => {
+                  setProductId(data.id);
+                }}
+                className="wish"
+              >
+                <img src={wishlist} />
+              </div>
             </div>
-          </div>
-        );
-      })}
-      <ToastContainer
-        position="bottom-center"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+          );
+        })}
+        <ToastContainer
+          position="bottom-center"
+          autoClose={1000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={true}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+      </main>
     </>
   );
 }

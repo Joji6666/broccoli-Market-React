@@ -1,0 +1,141 @@
+.navbar {
+  width: 5rem;
+  height: 100vh;
+  position: fixed;
+  background-color: rgba(43, 111, 0, 1);
+  transition: width 100ms ease;
+}
+
+.navbar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.navbar-container span {
+  font-size: 16px;
+  font-weight: 600;
+
+  color: black;
+}
+
+.nav-item {
+  width: 100%;
+}
+
+.arrow {
+  width: 100%;
+}
+
+.nav-item:last-child {
+  margin-top: auto;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 5rem;
+  color: black;
+  filter: opacity(0.7);
+  transition: 500ms;
+}
+
+.nav-link svg {
+  min-width: 2rem;
+  max-width: 2rem;
+  margin: 0 1.5rem;
+}
+
+.nav-text {
+  display: none;
+  margin-left: 1rem;
+  font-weight: 700;
+}
+
+.navbar:hover {
+  width: 16rem;
+  background-color: rgba(43, 111, 0, 0.98);
+}
+
+.navbar:hover .nav-text {
+  display: block;
+}
+
+.nav-link:hover {
+  filter: opacity(1);
+  background: rgb(223, 251, 138);
+  color: rgb(0, 0, 0);
+}
+
+.arrow {
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 100%;
+  font-size: 30px;
+}
+
+.arrow svg {
+  min-width: 2rem;
+  max-width: 2rem;
+  transform: rotate(0deg);
+  transition: 300ms;
+}
+
+.navbar:hover .arrow svg {
+  transform: rotate(-180deg);
+}
+
+/* 작은화면 */
+@media only screen and (max-width: 600px) {
+  .nav-link svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .navbar {
+    bottom: 0;
+    width: 100vw;
+    height: 5rem;
+  }
+  .arrow {
+    display: none;
+  }
+
+  .navbar-nav {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .navbar:hover {
+    width: 100vw;
+    background-color: rgba(43, 111, 0, 1);
+  }
+
+  .navbar .nav-text {
+    display: block;
+    font-size: 13px;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .nav-link:hover {
+    filter: opacity(1);
+    background: rgb(223, 251, 138);
+    color: black;
+  }
+}

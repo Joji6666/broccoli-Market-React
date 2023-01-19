@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import useDidMountEffect from "../usedidmounteffect";
+import "../style.css";
 
 export default function Chat() {
   const auth = getAuth();
@@ -117,8 +118,6 @@ export default function Chat() {
 
   return (
     <>
-      <h1>채팅방</h1>
-
       <div className="chat-container">
         <div className="chat-list"></div>
         {/* 위에서 가져온 내 uid가 포함된 문서들을 반복문을 통해 화면에 보여준다. */}

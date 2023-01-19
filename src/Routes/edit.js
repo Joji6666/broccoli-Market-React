@@ -5,6 +5,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
+import "../style.css";
 
 export default function Edit() {
   const auth = getAuth();
