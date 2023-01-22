@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../style.css";
+import "./main.css";
 import mainPhotoCard from "../images/main1-1.png";
 import mainPhotoCard2 from "../images/main1-2.png";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
 
@@ -22,48 +23,71 @@ export default function Main() {
   }, []);
 
   const nav = useNavigate();
+
+  const ref = useRef();
+  const ref2 = useRef();
+
+  let width = window.innerWidth;
+  console.log(width);
+  let resizeWidth;
   window.addEventListener("scroll", () => {
     let value = window.scrollY;
+    window.onresize = () => {
+      resizeWidth = window.innerWidth;
+    };
+
     console.log(value);
 
-    if (value > 600) {
+    if ((value > 600 && width > 1001) || resizeWidth > 1001) {
       ref.current.style = "animation: textSlide 1.2s ease-in-out forwards; ";
       ref2.current.style = "animation: textSlide2 1.2s ease-in-out forwards; ";
     }
-    if (value < 220) {
+    if ((value < 200 && width > 1001) || resizeWidth > 1001) {
       ref.current.style = "animation: returnSlide 1.2s ease-in-out forwards; ";
       ref2.current.style =
         "animation: returnSlide2 1.2s ease-in-out forwards; ";
     }
 
-    if (value > 1130) {
+    if ((value > 1600 && width > 1001) || resizeWidth > 1001) {
       ref.current.style = "animation: returnSlide 1.2s ease-in-out forwards; ";
       ref2.current.style =
         "animation: returnSlide2 1.2s ease-in-out forwards; ";
     }
   });
 
-  const ref = useRef();
-  const ref2 = useRef();
+  window.onresize = () => {
+    let width = window.innerWidth;
+    if (width < 800 || resizeWidth < 801) {
+      ref.current.style = "animation: none; ";
+      ref2.current.style = "animation: none; ";
+    } else if (width < 1000 || resizeWidth < 1001) {
+      ref.current.style = "animation: none; ";
+      ref2.current.style = "animation: none; ";
+    }
+  };
+
   return (
     <>
       <main>
         <div className="main-container">
           <div className="main-1">
-            <span>건강한 중고거래 브로콜리마켓</span>
+            <div className="text-box">
+              <span>건강한 중고거래</span>
+              <span>브로콜리마켓</span>
 
-            <div>
+              <span
+                className="navAuth"
+                onClick={() => {
+                  nav("/market");
+                }}
+              >
+                마켓 둘러보기
+              </span>
+            </div>
+            <div className="photobox">
               <img className="mainPhotoCard1" src={mainPhotoCard} />
               <img className="mainPhotoCard2" src={mainPhotoCard2} />
             </div>
-            <span
-              className="navAuth"
-              onClick={() => {
-                nav("/market");
-              }}
-            >
-              마켓 둘러보기
-            </span>
           </div>
           <div className="main-2">
             <span ref={ref}>안쓰는물건들을 지금 당장 판매하세요.</span>
@@ -79,7 +103,7 @@ export default function Main() {
           </div>
 
           <div className="main-3">
-            현재 인기 상품
+            <span id="best-product">최고 인기 상품</span>
             {/* 0부터 15개의 데이터만 보여준다. */}
             {product.slice(0, 15).map((data) => {
               return (

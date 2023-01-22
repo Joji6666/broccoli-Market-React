@@ -6,6 +6,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useNavigate } from "react-router-dom";
+import "./auth.css";
+import "../style.css";
+import logo from "../images/broccoli.png";
 
 export default function Login() {
   const auth = getAuth();
@@ -43,30 +46,55 @@ export default function Login() {
 
   return (
     <>
-      <input
-        type="email"
-        placeholder="이메일을 입력해주세요."
-        onChange={emailInput}
-      />
-      <input
-        type="password"
-        placeholder="비밀번호를 입력해주세요."
-        onChange={passwordInput}
-      />
+      <main>
+        <div className="input-container">
+          <div className="input-warp">
+            <h1>로그인</h1>
+            <img
+              onClick={() => {
+                nav("/main");
+              }}
+              src={logo}
+            />
+            <input
+              type="email"
+              required
+              placeholder="이메일을 입력해주세요."
+              onChange={emailInput}
+            />
+            <input
+              required
+              type="password"
+              placeholder="비밀번호를 입력해주세요."
+              onChange={passwordInput}
+            />
 
-      <button onClick={userLogin}>로그인</button>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+            <button className="auth-btn" onClick={userLogin}>
+              로그인
+            </button>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={true}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
+            <span
+              onClick={() => {
+                nav("/auth");
+              }}
+              id="nav-login"
+            >
+              회원이 아니신가요?
+            </span>
+          </div>
+        </div>
+      </main>
     </>
   );
 }

@@ -17,11 +17,13 @@ import Navbar from "./layout/navbar";
 function App() {
   return (
     <div className="App">
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
       <Navbar />
       <Routes>
         <Route path="/" element={<Intro />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/main" element={<Main />} />
         <Route path="/market" element={<Market />} />
         <Route path="/upload" element={<Upload />} />

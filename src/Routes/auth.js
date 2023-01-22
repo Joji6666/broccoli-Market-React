@@ -10,6 +10,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import "../style.css";
+import "./auth.css";
+import logo from "../images/broccoli.png";
 
 export default function Auth() {
   const auth = getAuth();
@@ -59,35 +62,61 @@ export default function Auth() {
 
   return (
     <>
-      <input
-        type="text"
-        placeholder="이름을 입력해주세요."
-        onChange={usernameInput}
-      />
-      <input
-        type="email"
-        placeholder="이메일을 입력해주세요."
-        onChange={emailInput}
-      />
-      <input
-        type="password"
-        placeholder="비밀번호를 입력해주세요."
-        onChange={passwordInput}
-      />
+      <main>
+        <div className="input-container">
+          <div className="input-warp">
+            <h1>회원가입</h1>
+            <img
+              onClick={() => {
+                nav("/main");
+              }}
+              src={logo}
+            />
+            <input
+              type="text"
+              required
+              placeholder="이름을 입력해주세요."
+              onChange={usernameInput}
+            />
+            <input
+              type="email"
+              required
+              placeholder="이메일을 입력해주세요."
+              onChange={emailInput}
+            />
+            <input
+              type="password"
+              required
+              placeholder="비밀번호를 입력해주세요."
+              onChange={passwordInput}
+            />
 
-      <button onClick={createUser}>회원가입</button>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+            <button className="auth-btn" onClick={createUser}>
+              회원가입
+            </button>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={true}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
+            <span
+              onClick={() => {
+                nav("/login");
+              }}
+              id="nav-login"
+            >
+              이미 회원이신가요?
+            </span>
+          </div>
+        </div>
+      </main>
     </>
   );
 }
