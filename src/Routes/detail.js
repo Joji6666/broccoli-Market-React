@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { db } from "../firebase";
 import "../style.css";
+import "./detail.css";
 
 export default function Detail() {
   const auth = getAuth();
@@ -118,37 +119,44 @@ export default function Detail() {
 
   return (
     <>
-      <h1>상세페이지</h1>
       <div className="detail-product-container">
-        <div className="image-container">
-          {productImage.map((data) => {
-            return (
-              <>
-                <div className="detail-image">
-                  <img src={data} />
-                </div>
-              </>
-            );
-          })}
+        <h1>상품 상세 페이지</h1>
+        <div className="detail-wrap">
+          <div className="image-container">
+            {productImage.map((data) => {
+              return (
+                <>
+                  <div className="detail-image">
+                    <img src={data} />
+                  </div>
+                </>
+              );
+            })}
+          </div>
+          <div className="content-box">
+            <span className="content">상품 설명:{productData.content}</span>
+            <span className="title">상품명:{productData.title}</span>
+
+            <span className="price">상품 가격:{productData.price}</span>
+
+            <span className="seller">판매자:{productData.seller}</span>
+            <span className="date">작성 날짜:{productData.date}</span>
+          </div>
+          <button
+            className="joinChat-btn"
+            style={{ display: joinChatRoomDisplay }}
+            onClick={joinChatRoom}
+          >
+            채팅
+          </button>
+          <Link to={`/edit?id=${productId}`}>
+            <button style={{ display: display }}>수정</button>
+          </Link>
+          <button onClick={deleteProduct} style={{ display: display }}>
+            삭제
+          </button>
         </div>
-        <div className="content">{productData.content}</div>
-        <div className="title">{productData.title}</div>
-
-        <div className="price">{productData.price}</div>
-
-        <div className="seller">{productData.seller}</div>
-        <div className="date">{productData.date}</div>
       </div>
-      <button style={{ display: joinChatRoomDisplay }} onClick={joinChatRoom}>
-        채팅
-      </button>
-
-      <Link to={`/edit?id=${productId}`}>
-        <button style={{ display: display }}>수정</button>
-      </Link>
-      <button onClick={deleteProduct} style={{ display: display }}>
-        삭제
-      </button>
     </>
   );
 }

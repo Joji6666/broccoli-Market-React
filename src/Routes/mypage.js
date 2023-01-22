@@ -5,6 +5,7 @@ import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import "../style.css";
+import "./market.css";
 
 export default function Mypage() {
   const auth = getAuth();
@@ -55,37 +56,65 @@ export default function Mypage() {
 
   return (
     <>
-      <h1>마이페이지</h1>
-      <div>내 상품</div>
-      {myProduct.map((data) => {
-        return (
-          <>
-            <Link to={`/detail?id=${data.id}`}>
-              <div
-                className="thumbnail"
-                style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
-              ></div>
-              <div>상품명:{data.data().title}</div>
-              <div>상품가격:{data.data().price}</div>
-            </Link>
-          </>
-        );
-      })}
-      <div>찜목록</div>
-      {myWish.map((data) => {
-        return (
-          <>
-            <Link to={`/detail?id=${data.id}`}>
-              <div
-                className="thumbnail"
-                style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
-              ></div>
-              <div>상품명:{data.data().title}</div>
-              <div>상품가격:{data.data().price}</div>
-            </Link>
-          </>
-        );
-      })}
+      <main>
+        <span>마이페이지</span>
+        <div className="product-warp">
+          <h1>내 상품</h1>
+          <div className="product-container">
+            {myProduct.map((data) => {
+              // const likeUid = data.data().likeUid;
+              // let wish = "🤍";
+              // if (likeUid && likeUid.includes(userUid)) {
+              //   wish = "❤️";
+              // }
+
+              return (
+                <div className="product-box">
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    className="detail-nav"
+                    to={`/detail?id=${data.id}`}
+                  >
+                    <img className="thumbnail" src={data.data().imageUrl[0]} />
+
+                    <div>상품명:{data.data().title}</div>
+                    <div>상품가격:{data.data().price}</div>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </main>
+      <main>
+        <div className="product-warp">
+          <h1>내가 찜한 상품</h1>
+          <div className="product-container">
+            {myWish.map((data) => {
+              // const likeUid = data.data().likeUid;
+              // let wish = "🤍";
+              // if (likeUid && likeUid.includes(userUid)) {
+              //   wish = "❤️";
+              // }
+
+              return (
+                <div className="product-box">
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    className="detail-nav"
+                    to={`/detail?id=${data.id}`}
+                  >
+                    <img className="thumbnail" src={data.data().imageUrl[0]} />
+
+                    <div>상품명:{data.data().title}</div>
+                    <div>상품가격:{data.data().price}</div>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </main>
     </>
   );
 }
