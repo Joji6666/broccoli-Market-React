@@ -92,23 +92,27 @@ export default function Market() {
 
           return (
             <div className="product-container">
-              <Link to={`/detail?id=${data.id}`}>
+              <div className="product-box">
+                <Link className="detail-nav" to={`/detail?id=${data.id}`}>
+                  <div
+                    className="thumbnail"
+                    style={{
+                      backgroundImage: `url(${data.data().imageUrl[0]})`,
+                    }}
+                  ></div>
+                  <div>상품명:{data.data().title}</div>
+                  <div>상품가격:{data.data().price}</div>
+                  <div>판매자:{data.data().seller}</div>
+                  <div>올린 날짜:{data.data().date}</div>
+                </Link>
                 <div
-                  className="thumbnail"
-                  style={{ backgroundImage: `url(${data.data().imageUrl[0]})` }}
-                ></div>
-                <div>상품명:{data.data().title}</div>
-                <div>상품가격:{data.data().price}</div>
-                <div>판매자:{data.data().seller}</div>
-                <div>올린 날짜:{data.data().date}</div>
-              </Link>
-              <div
-                onClick={() => {
-                  setProductId(data.id);
-                }}
-                className="wish"
-              >
-                <img src={wishlist} />
+                  onClick={() => {
+                    setProductId(data.id);
+                  }}
+                  className="wish"
+                >
+                  <img className="wish-logo" src={wishlist} />
+                </div>
               </div>
             </div>
           );
