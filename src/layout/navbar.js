@@ -11,7 +11,7 @@ export default function Navbar() {
           <li className="arrow">
             <Link
               to={"/main"}
-              style={{ textDecoration: "none" }}
+              style={{ textDecoration: "none", color: "black" }}
               className="nav-link"
             >
               <span className="nav-text arrow-text">브로콜리마켓</span>

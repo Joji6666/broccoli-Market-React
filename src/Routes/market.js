@@ -16,6 +16,7 @@ import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
 import "../style.css";
+import "./market.css";
 import useDidMountEffect from "../usedidmounteffect";
 import "react-toastify/dist/ReactToastify.css";
 import wishlist from "../wishlist.png";
@@ -83,52 +84,53 @@ export default function Market() {
   return (
     <>
       <main>
-        {product.map((data) => {
-          // const likeUid = data.data().likeUid;
-          // let wish = "🤍";
-          // if (likeUid && likeUid.includes(userUid)) {
-          //   wish = "❤️";
-          // }
+        <div className="product-warp">
+          <h1>상품 목록</h1>
+          <div className="product-container">
+            {product.map((data) => {
+              // const likeUid = data.data().likeUid;
+              // let wish = "🤍";
+              // if (likeUid && likeUid.includes(userUid)) {
+              //   wish = "❤️";
+              // }
 
-          return (
-            <div className="product-container">
-              <div className="product-box">
-                <Link className="detail-nav" to={`/detail?id=${data.id}`}>
+              return (
+                <div className="product-box">
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    className="detail-nav"
+                    to={`/detail?id=${data.id}`}
+                  >
+                    <img className="thumbnail" src={data.data().imageUrl[0]} />
+
+                    <div>상품명:{data.data().title}</div>
+                    <div>상품가격:{data.data().price}</div>
+                  </Link>
                   <div
-                    className="thumbnail"
-                    style={{
-                      backgroundImage: `url(${data.data().imageUrl[0]})`,
+                    onClick={() => {
+                      setProductId(data.id);
                     }}
-                  ></div>
-                  <div>상품명:{data.data().title}</div>
-                  <div>상품가격:{data.data().price}</div>
-                  <div>판매자:{data.data().seller}</div>
-                  <div>올린 날짜:{data.data().date}</div>
-                </Link>
-                <div
-                  onClick={() => {
-                    setProductId(data.id);
-                  }}
-                  className="wish"
-                >
-                  <img className="wish-logo" src={wishlist} />
+                    className="wish"
+                  >
+                    <img className="wish-logo" src={wishlist} />
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
-        <ToastContainer
-          position="bottom-center"
-          autoClose={1000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={true}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+              );
+            })}
+            <ToastContainer
+              position="bottom-center"
+              autoClose={1000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={true}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
+          </div>
+        </div>
       </main>
     </>
   );

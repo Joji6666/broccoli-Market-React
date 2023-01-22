@@ -42,27 +42,6 @@ main {
   background-position: center;
 }
 
-.thumbnail {
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
-  background-size: cover;
-  margin: 20px;
-}
-
-.product-container {
-  width: 800px;
-  height: 350px;
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.product-box {
-  margin: 20px;
-  border-bottom: 1px solid gray;
-}
-
 .detail-product-container {
   display: flex;
   flex-direction: column;
@@ -81,41 +60,10 @@ main {
   width: 500px;
   height: 500px;
 }
-.wish {
-  width: fit-content;
-  height: fit-content;
-  cursor: pointer;
-}
-
-.wish img {
-  width: 24px;
-  height: 24px;
-}
 
 @media only screen and (max-width: 800px) {
   main {
     margin: 0;
     padding: 0;
-  }
-
-  .thumbnail {
-    width: 200px;
-    height: 200px;
-    border-radius: 20px;
-    background-size: cover;
-    margin: 10px;
-  }
-
-  .product-container {
-    width: 450px;
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-  }
-
-  .product-box {
-    margin: 10px;
-    border-bottom: 1px solid gray;
   }
 }

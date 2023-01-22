@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../style.css";
 import "./main.css";
+import "./market.css";
 import mainPhotoCard from "../images/main1-1.png";
 import mainPhotoCard2 from "../images/main1-2.png";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
+import wishlist from "../wishlist.png";
 
 export default function Main() {
   const [product, setProduct] = useState([]);
@@ -26,45 +28,6 @@ export default function Main() {
 
   const ref = useRef();
   const ref2 = useRef();
-
-  let width = window.innerWidth;
-  console.log(width);
-  let resizeWidth;
-  window.addEventListener("scroll", () => {
-    let value = window.scrollY;
-    window.onresize = () => {
-      resizeWidth = window.innerWidth;
-    };
-
-    console.log(value);
-
-    if ((value > 600 && width > 1001) || resizeWidth > 1001) {
-      ref.current.style = "animation: textSlide 1.2s ease-in-out forwards; ";
-      ref2.current.style = "animation: textSlide2 1.2s ease-in-out forwards; ";
-    }
-    if ((value < 200 && width > 1001) || resizeWidth > 1001) {
-      ref.current.style = "animation: returnSlide 1.2s ease-in-out forwards; ";
-      ref2.current.style =
-        "animation: returnSlide2 1.2s ease-in-out forwards; ";
-    }
-
-    if ((value > 1600 && width > 1001) || resizeWidth > 1001) {
-      ref.current.style = "animation: returnSlide 1.2s ease-in-out forwards; ";
-      ref2.current.style =
-        "animation: returnSlide2 1.2s ease-in-out forwards; ";
-    }
-  });
-
-  window.onresize = () => {
-    let width = window.innerWidth;
-    if (width < 800 || resizeWidth < 801) {
-      ref.current.style = "animation: none; ";
-      ref2.current.style = "animation: none; ";
-    } else if (width < 1000 || resizeWidth < 1001) {
-      ref.current.style = "animation: none; ";
-      ref2.current.style = "animation: none; ";
-    }
-  };
 
   return (
     <>
@@ -103,27 +66,36 @@ export default function Main() {
           </div>
 
           <div className="main-3">
-            <span id="best-product">최고 인기 상품</span>
-            {/* 0부터 15개의 데이터만 보여준다. */}
-            {product.slice(0, 15).map((data) => {
-              return (
-                <div>
-                  <Link className="detail-nav" to={`/detail?id=${data.id}`}>
-                    <div
-                      className="thumbnail"
-                      style={{
-                        backgroundImage: `url(${data.data().imageUrl[0]})`,
-                      }}
-                    ></div>
-                    <div>상품명:{data.data().title}</div>
-                    <div>상품가격:{data.data().price}</div>
-                    <div>판매자:{data.data().seller}</div>
-                    <div>올린 날짜:{data.data().date}</div>
-                  </Link>
-                  <div>좋아요:{data.data().like.length}</div>
-                </div>
-              );
-            })}
+            <div className="product-warp">
+              <span id="best-product">최고 인기 상품</span>
+              <div className="product-container">
+                {/* 0부터 15개의 데이터만 보여준다. */}
+                {product.slice(0, 15).map((data) => {
+                  return (
+                    <>
+                      <div className="product-box">
+                        <Link
+                          style={{ textDecoration: "none", color: "black" }}
+                          className="detail-nav"
+                          to={`/detail?id=${data.id}`}
+                        >
+                          <img
+                            className="thumbnail"
+                            src={data.data().imageUrl[0]}
+                          />
+
+                          <div>상품명:{data.data().title}</div>
+                          <div>상품가격:{data.data().price}</div>
+                        </Link>
+
+                        <img className="wish-logo" src={wishlist} />
+                        <div>좋아요:{data.data().like.length}</div>
+                      </div>
+                    </>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </main>
