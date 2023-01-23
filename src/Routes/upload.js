@@ -22,9 +22,10 @@ export default function Upload() {
   const [imgFile, setImgFile] = useState([]);
 
   const imgRef = useRef();
+  const uploadRef = useRef();
 
   const handleClick = () => {
-    // keywords 배열의 길이가 5보다 작은 경우만 추가
+    // tag 배열의 길이가 5보다 작은 경우만 추가
     if (tag.length < 5) {
       setTag((tags) => [...tags, tagValue]);
     } else {
@@ -144,6 +145,7 @@ export default function Upload() {
   };
 
   const upload = async () => {
+    uploadRef.current.style = "display:block";
     try {
       await imgUpload();
 
@@ -156,6 +158,15 @@ export default function Upload() {
 
   return (
     <>
+      <div
+        ref={uploadRef}
+        className="uploading-box"
+        style={{ display: "none" }}
+      >
+        <div className="animation-box">
+          <h1 data-text="uploading">uploading</h1>
+        </div>
+      </div>
       <h1 style={{ margin: 0 }}>상품 업로드</h1>
       <div className="upload-container">
         <div className="upload-box">

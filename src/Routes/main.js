@@ -87,9 +87,10 @@ export default function Main() {
                           <div>상품명:{data.data().title}</div>
                           <div>상품가격:{data.data().price}</div>
                         </Link>
-
-                        <img className="wish-logo" src={wishlist} />
-                        <div>좋아요:{data.data().like.length}</div>
+                        <div>
+                          <img className="wish-logo" src={wishlist} />:
+                          {data.data().like.length}
+                        </div>
                       </div>
                     </>
                   );
