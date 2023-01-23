@@ -23,7 +23,7 @@ function App() {
       </Routes>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Intro />} />
+        <Route path="/" element={<Main />} />
         <Route path="/main" element={<Main />} />
         <Route path="/market" element={<Market />} />
         <Route path="/upload" element={<Upload />} />

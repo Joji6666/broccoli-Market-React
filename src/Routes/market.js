@@ -27,6 +27,8 @@ export default function Market() {
   const auth = getAuth();
   const [username, setUserName] = useState("");
   const [userUid, setUserUid] = useState("");
+  const [serachTag, setSerachTag] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     //로그인 상태 관리 코드
@@ -81,11 +83,79 @@ export default function Market() {
     };
   }, [productId]);
 
+  // const handleSearch = () => {
+  //   // filteredProducts를 갱신하는 코드
+  //   const filteredProducts = product.filter((p) => {
+  //     //tag 가 존재하거나 상품제목이 검색어와 일치하면 필터링
+  //     if (p.data().tag) {
+  //       // some 함수를 사용하여 하나 이상의 태그가 검색어와 일치하는지 확인
+  //       return p
+  //         .data()
+  //         .tag.some((t) => t.toLowerCase().includes(serachTag.toLowerCase()));
+  //     }
+  //   });
+  //   setFilteredProducts(filteredProducts);
+  // };
+
+  const handleSearch = () => {
+    // filteredProducts를 갱신하는 코드
+    const filteredProducts = product.filter((p) => {
+      //tag 가 존재하거나 상품제목이 검색어와 일치하면 필터링
+      if (p.data().tag || p.data().title) {
+        return (
+          p
+            .data()
+            .tag.some((t) =>
+              t.toLowerCase().includes(serachTag.toLowerCase())
+            ) || p.data().title.toLowerCase().includes(serachTag.toLowerCase())
+        );
+      }
+    });
+    setFilteredProducts(filteredProducts);
+  };
   return (
     <>
       <main>
         <div className="product-warp">
           <h1>상품 목록</h1>
+          <div>
+            검색
+            <input
+              type="text"
+              placeholder="검색할 상품을 입력해주세요."
+              onChange={(e) => {
+                setSerachTag(e.target.value);
+              }}
+            ></input>
+            <button onClick={handleSearch}>검색</button>
+          </div>
+          <div>
+            {filteredProducts.map((data) => {
+              console.log(data);
+              return (
+                <div className="product-box">
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    className="detail-nav"
+                    to={`/detail?id=${data.id}`}
+                  >
+                    <img className="thumbnail" src={data.data().imageUrl[0]} />
+
+                    <div>상품명:{data.data().title}</div>
+                    <div>상품가격:{data.data().price}</div>
+                  </Link>
+                  <div
+                    onClick={() => {
+                      setProductId(data.id);
+                    }}
+                    className="wish"
+                  >
+                    <img className="wish-logo" src={wishlist} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
           <div className="product-container">
             {product.map((data) => {
               // const likeUid = data.data().likeUid;
