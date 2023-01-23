@@ -167,8 +167,9 @@ export default function Upload() {
           <h1 data-text="uploading">uploading</h1>
         </div>
       </div>
-      <h1 style={{ margin: 0 }}>상품 업로드</h1>
+
       <div className="upload-container">
+        <h1 style={{ margin: 0 }}>상품 업로드</h1>
         <div className="upload-box">
           <div className="image-upload-box">
             <span
@@ -194,15 +195,7 @@ export default function Upload() {
             <div className="preview-image-box">
               {/* imaFile를 순회하며 각 이미지를 렌더링 */}
               {imgFile.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    margin: "5px",
-                  }}
-                />
+                <img id="preview-img" key={index} src={image} />
               ))}
             </div>
           </div>
@@ -220,17 +213,21 @@ export default function Upload() {
               required
               type="text"
               id="tag"
-              placeholder="상품과 연간된 태그를 입력해주세요."
+              placeholder="상품과 연관된 태그를 입력해주세요. 최대 5개"
               onChange={(e) => {
                 setTagValue(e.target.value);
               }}
             />
-            태그:
-            {tag.map((data, index) => (
-              <div key={index}>{data}</div>
-            ))}
+            <span>태그:</span>
+            <div style={{ display: "flex" }}>
+              {tag.map((data, index) => (
+                <div style={{ marginLeft: "2px" }} key={index}>
+                  #{data}
+                </div>
+              ))}
+            </div>
             <button id="addTag-btn" onClick={handleClick}>
-              태그 추가하기
+              태그 추가
             </button>
           </div>
           <input
@@ -252,7 +249,9 @@ export default function Upload() {
             }}
           />
 
-          <button onClick={upload}>업로드</button>
+          <button id="upload-btn" onClick={upload}>
+            업로드
+          </button>
         </div>
       </div>
     </>

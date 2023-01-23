@@ -10,10 +10,12 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { db } from "../firebase";
 import useDidMountEffect from "../usedidmounteffect";
 import "../style.css";
+import "./chat.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Chat() {
   const auth = getAuth();
@@ -24,6 +26,7 @@ export default function Chat() {
   const [chatData, setCahtData] = useState([]);
   const [chatContent, setChatContent] = useState("");
 
+  const nav = useNavigate();
   useEffect(() => {
     //로그인 상태 관리 코드
     onAuthStateChanged(auth, (user) => {
@@ -31,6 +34,9 @@ export default function Chat() {
         setUserName(user.displayName);
         setUserUid(user.uid);
         console.log(user);
+      } else {
+        alert("로그인을 해주세요.");
+        nav("/login");
       }
     });
   }, []);
@@ -116,43 +122,119 @@ export default function Chat() {
     console.log(chatData);
   }, [chatRoomid]);
 
+  const chatRef = useRef();
+
   return (
-    <>
+    <main>
       <div className="chat-container">
-        <div className="chat-list"></div>
-        {/* 위에서 가져온 내 uid가 포함된 문서들을 반복문을 통해 화면에 보여준다. */}
-        {chatroom.map((data) => {
-          return (
-            <>
-              <div
-                onClick={() => {
-                  setChatRoomId(data.id);
-                  console.log(chatRoomid);
-                }}
-                className="chatroom"
-              >
-                <div>{data.data().productTitle}</div>
-                <div>{data.data().username}</div>
-                <div> {data.data().productId}</div>
-              </div>
-            </>
-          );
-        })}
-        <div className="content-container">
-          {chatData.map((data) => {
+        <div className="chat-list">
+          <h1>채팅 목록</h1>
+          {/* 위에서 가져온 내 uid가 포함된 문서들을 반복문을 통해 화면에 보여준다. */}
+          {chatroom.map((data) => {
             return (
-              <>
-                {console.log(data)}
-                <div>보낸 사람:{data.author}</div>
-                <div>내용:{data.content}</div>
-                <div>시간:{data.date}</div>
-              </>
+              <div>
+                <div className="chatroom-container">
+                  <div
+                    onClick={() => {
+                      setChatRoomId(data.id);
+                      console.log(chatRoomid);
+                    }}
+                    className="chatroom"
+                  >
+                    <div>상품이름:{data.data().productTitle}</div>
+                    <div>판매자:{data.data().username}</div>
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>
-        <input className="chat-content" onChange={chatHandler}></input>
-        <button onClick={sendMessage}>전송</button>
+        <div className="content-container">
+          <h1>채팅방</h1>
+          <div
+            style={{
+              overflowY: "scroll",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {chatData.map((data) => {
+              const date = new Date(data.date);
+              return (
+                <>
+                  {console.log(data)}
+                  <div className="chat-content-warp">
+                    <div
+                      ref={chatRef}
+                      className="chat-box"
+                      style={
+                        userUid == data.authorUid
+                          ? { float: "right" }
+                          : { float: "left" }
+                      }
+                      id={data.authorUid}
+                    >
+                      <div
+                        style={
+                          userUid == data.authorUid
+                            ? {
+                                float: "right",
+                                marginTop: "5px",
+                                marginLeft: "5px",
+                              }
+                            : {
+                                float: "left",
+                                marginTop: "5px",
+                                marginRight: "5px",
+                              }
+                        }
+                      >
+                        {data.author}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        {userUid == data.authorUid ? (
+                          <div style={{ fontSize: "12px", marginRight: "2px" }}>
+                            {date.getHours()}:{date.getMinutes()}
+                          </div>
+                        ) : null}
+
+                        <div
+                          style={
+                            userUid == data.authorUid
+                              ? {
+                                  backgroundColor: "green",
+                                  borderRadius: "5px",
+                                  padding: "5px",
+                                }
+                              : {
+                                  backgroundColor: "gray",
+                                  borderRadius: "5px",
+                                  padding: "5px",
+                                }
+                          }
+                        >
+                          {data.content}
+                        </div>
+                        {userUid != data.authorUid ? (
+                          <div style={{ fontSize: "12px", marginRight: "2px" }}>
+                            {date.getHours()}:{date.getMinutes()}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              );
+            })}
+            <div>
+              <input className="chat-content" onChange={chatHandler}></input>
+              <button className="send-btn" onClick={sendMessage}>
+                전송
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </>
+    </main>
   );
 }

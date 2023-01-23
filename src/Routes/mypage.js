@@ -6,6 +6,7 @@ import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import "../style.css";
 import "./market.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Mypage() {
   const auth = getAuth();
@@ -13,6 +14,7 @@ export default function Mypage() {
   const [userUid, setUserUid] = useState("");
   const [myProduct, setMyProduct] = useState([]);
   const [myWish, setMyWish] = useState([]);
+  const nav = useNavigate();
 
   useEffect(() => {
     //로그인 상태 관리 코드
@@ -21,6 +23,9 @@ export default function Mypage() {
         setUserName(user.displayName);
         setUserUid(user.uid);
         console.log(user);
+      } else {
+        alert("로그인을 해주세요.");
+        nav("/login");
       }
     });
   }, []);
