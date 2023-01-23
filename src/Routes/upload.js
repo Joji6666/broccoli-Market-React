@@ -2,9 +2,11 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
+import "../style.css";
+import "./upload.css";
 
 export default function Upload() {
   const auth = getAuth();
@@ -15,11 +17,33 @@ export default function Upload() {
   const [content, setContent] = useState("");
   const [seller, setSeller] = useState("");
   const [sellerUid, setSellerUid] = useState("");
+  const [tag, setTag] = useState([]);
+  const [imgFile, setImgFile] = useState([]);
+
+  const imgRef = useRef();
 
   const imageFilesHandler = (e) => {
     const imageFiles = e.target.files;
     setImage(imageFiles);
     console.log(imageFiles);
+
+    // 이미지 미리보기 코드
+    // imageFiles를 반복문으로 순회하며 각 파일들을 읽어들임
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+
+      const reader = new FileReader();
+
+      // 파일 읽기 시작
+      reader.readAsDataURL(file);
+
+      // onloadend 이벤트 핸들러를 설정, 이미지를 읽어들인 후 imgFile를 업데이트
+
+      reader.onloadend = () => {
+        //         result 에는 readAsDataURL을 이용하여 가져온 값이 들어있다.
+        setImgFile((prevImages) => [...prevImages, reader.result]);
+      };
+    }
   };
 
   useEffect(() => {
@@ -110,40 +134,72 @@ export default function Upload() {
   };
 
   return (
-    <div>
-      Upload
-      <input
-        type="text"
-        id="title"
-        placeholder="상품 제목을 입력해주세요."
-        onChange={(e) => {
-          setTitle(e.target.value);
-        }}
-      />
-      <input
-        type="text"
-        id="price"
-        placeholder="상품 가격을 입력해주세요."
-        onChange={(e) => {
-          setPrice(e.target.value);
-        }}
-      />
-      <input
-        type="text"
-        id="content"
-        placeholder="상품 내용을 입력해주세요."
-        onChange={(e) => {
-          setContent(e.target.value);
-        }}
-      />
-      <input
-        type="file"
-        id="image"
-        placeholder="이미지를 업로드 해주세요."
-        multiple
-        onChange={imageFilesHandler}
-      />
-      <button onClick={upload}>업로드</button>
-    </div>
+    <>
+      <div className="upload-container">
+        <div className="upload-box">
+          <div className="image-upload-box">
+            <span style={{ fontSize: "13px", color: "gray", float: "left" }}>
+              최소 1장의 이미지를 업로드 해주세요.
+            </span>
+            <input
+              ref={imgRef}
+              accept="image/*"
+              required
+              type="file"
+              id="image"
+              placeholder="이미지를 업로드 해주세요."
+              multiple
+              onChange={imageFilesHandler}
+            />
+            {/* imaFile를 순회하며 각 이미지를 렌더링 */}
+            {imgFile.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                style={{ width: "100px", height: "100px" }}
+              />
+            ))}
+          </div>
+          <input
+            required
+            type="text"
+            id="title"
+            placeholder="상품 제목을 입력해주세요."
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+          />
+          <input
+            required
+            type="text"
+            id="tag"
+            placeholder="상품과 연간된 태그를 입력해주세요."
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+          />
+          <input
+            required
+            type="text"
+            id="price"
+            placeholder="상품 가격을 입력해주세요."
+            onChange={(e) => {
+              setPrice(e.target.value);
+            }}
+          />
+          <input
+            required
+            type="text"
+            id="content"
+            placeholder="상품 내용을 입력해주세요."
+            onChange={(e) => {
+              setContent(e.target.value);
+            }}
+          />
+
+          <button onClick={upload}>업로드</button>
+        </div>
+      </div>
+    </>
   );
 }
