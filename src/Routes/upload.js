@@ -17,15 +17,32 @@ export default function Upload() {
   const [content, setContent] = useState("");
   const [seller, setSeller] = useState("");
   const [sellerUid, setSellerUid] = useState("");
+  const [tagValue, setTagValue] = useState("");
   const [tag, setTag] = useState([]);
   const [imgFile, setImgFile] = useState([]);
 
   const imgRef = useRef();
 
+  const handleClick = () => {
+    // keywords 배열의 길이가 5보다 작은 경우만 추가
+    if (tag.length < 5) {
+      setTag((tags) => [...tags, tagValue]);
+    } else {
+      alert("연관검색어는 최대 5개까지 추가 가능합니다.");
+    }
+  };
+
   const imageFilesHandler = (e) => {
     const imageFiles = e.target.files;
     setImage(imageFiles);
     console.log(imageFiles);
+
+    if (imageFiles.length > 10) {
+      alert("이미지는 최대 10장 까지 업로드 가능합니다.");
+      setImage(null);
+      e.target.value = null;
+    } else {
+    }
 
     // 이미지 미리보기 코드
     // imageFiles를 반복문으로 순회하며 각 파일들을 읽어들임
@@ -53,6 +70,9 @@ export default function Upload() {
         setSeller(user.displayName);
         setSellerUid(user.uid);
         console.log(user);
+      } else {
+        alert("로그인을 해주세요.");
+        nav("/login");
       }
     });
   }, []);
@@ -113,6 +133,7 @@ export default function Upload() {
       sellerUid,
       like: [],
       likeUid: [],
+      tag,
       date: new Date().toString(),
     }).then((result) => {
       console.log(result);
@@ -135,10 +156,18 @@ export default function Upload() {
 
   return (
     <>
+      <h1 style={{ margin: 0 }}>상품 업로드</h1>
       <div className="upload-container">
         <div className="upload-box">
           <div className="image-upload-box">
-            <span style={{ fontSize: "13px", color: "gray", float: "left" }}>
+            <span
+              style={{
+                fontSize: "13px",
+                color: "gray",
+                float: "left",
+                margin: "10px",
+              }}
+            >
               최소 1장의 이미지를 업로드 해주세요.
             </span>
             <input
@@ -151,14 +180,20 @@ export default function Upload() {
               multiple
               onChange={imageFilesHandler}
             />
-            {/* imaFile를 순회하며 각 이미지를 렌더링 */}
-            {imgFile.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                style={{ width: "100px", height: "100px" }}
-              />
-            ))}
+            <div className="preview-image-box">
+              {/* imaFile를 순회하며 각 이미지를 렌더링 */}
+              {imgFile.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    margin: "5px",
+                  }}
+                />
+              ))}
+            </div>
           </div>
           <input
             required
@@ -169,15 +204,24 @@ export default function Upload() {
               setTitle(e.target.value);
             }}
           />
-          <input
-            required
-            type="text"
-            id="tag"
-            placeholder="상품과 연간된 태그를 입력해주세요."
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-          />
+          <div className="tag-box">
+            <input
+              required
+              type="text"
+              id="tag"
+              placeholder="상품과 연간된 태그를 입력해주세요."
+              onChange={(e) => {
+                setTagValue(e.target.value);
+              }}
+            />
+            태그:
+            {tag.map((data, index) => (
+              <div key={index}>{data}</div>
+            ))}
+            <button id="addTag-btn" onClick={handleClick}>
+              태그 추가하기
+            </button>
+          </div>
           <input
             required
             type="text"
