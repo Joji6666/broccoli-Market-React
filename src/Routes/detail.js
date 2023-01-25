@@ -142,19 +142,29 @@ export default function Detail() {
             <span className="seller">판매자:{productData.seller}</span>
             <span className="date">작성 날짜:{productData.date}</span>
           </div>
-          <button
-            className="joinChat-btn"
-            style={{ display: joinChatRoomDisplay }}
-            onClick={joinChatRoom}
-          >
-            채팅
-          </button>
-          <Link to={`/edit?id=${productId}`}>
-            <button style={{ display: display }}>수정</button>
-          </Link>
-          <button onClick={deleteProduct} style={{ display: display }}>
-            삭제
-          </button>
+          <div className="btn-box">
+            <button
+              className="joinChat-btn"
+              style={{ display: joinChatRoomDisplay }}
+              onClick={joinChatRoom}
+            >
+              채팅
+            </button>
+            <Link
+              style={{ textDecoration: "none" }}
+              to={`/edit?id=${productId}`}
+            >
+              <button style={{ display: display, backgroundColor: "green" }}>
+                수정
+              </button>
+            </Link>
+            <button
+              onClick={deleteProduct}
+              style={{ display: display, backgroundColor: "red" }}
+            >
+              삭제
+            </button>
+          </div>
         </div>
       </div>
     </>

@@ -48,3 +48,15 @@
   margin: 10px;
   border-bottom: 1px solid rgb(233, 233, 233);
 }
+
+.btn-box {
+  display: flex;
+}
+
+.btn-box button {
+  margin: 3px;
+  width: 50px;
+  height: 30px;
+  border-radius: 10px;
+  font-weight: bold;
+}
