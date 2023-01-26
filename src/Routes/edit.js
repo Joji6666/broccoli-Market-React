@@ -12,7 +12,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
 import "../style.css";
-import useDidMountEffect from "../usedidmounteffect";
+
 import "./upload.css";
 export default function Edit() {
   const auth = getAuth();
@@ -28,6 +28,7 @@ export default function Edit() {
   const [tag, setTag] = useState([]);
   const [imgFile, setImgFile] = useState([]);
   const [uploadedUrl, setUploadedUrl] = useState([]);
+  const [imgCount, setImgCount] = useState(0);
 
   const imgRef = useRef();
   const uploadRef = useRef();
@@ -43,7 +44,6 @@ export default function Edit() {
       if (user) {
         setSeller(user.displayName);
         setSellerUid(user.uid);
-        console.log(user);
       } else {
         alert("로그인을 해주세요.");
         nav("/login");
@@ -51,7 +51,6 @@ export default function Edit() {
     });
     getProduct.then((data) => {
       setProductData(data.data());
-      console.log(data.data());
     });
   }, []);
 
@@ -60,7 +59,6 @@ export default function Edit() {
       productData.tag.map((data) => {
         setTag((tags) => [...tags, data]);
       });
-      console.log(tag);
     }
 
     if (productData.imageUrl) {
@@ -68,8 +66,7 @@ export default function Edit() {
         setUploadedUrl((images) => [...images, data]);
         imageUrl.push(data);
       });
-      console.log(imageUrl);
-      console.log(uploadedUrl);
+      setImgCount(productData.imageUrl.length);
       setTitle(productData.title);
       setContent(productData.content);
       setPrice(productData.price);
@@ -87,14 +84,19 @@ export default function Edit() {
 
   const imageFilesHandler = (e) => {
     const imageFiles = e.target.files;
-    setImage(imageFiles);
-    console.log(imageFiles);
 
-    if (imageFiles.length > 10) {
+    console.log(imageFiles);
+    console.log(imgCount);
+    if (imgCount + imageFiles.length > 10) {
       alert("이미지는 최대 10장 까지 업로드 가능합니다.");
-      setImage(null);
-      e.target.value = null;
+
+      return;
     } else {
+      setImgCount(imgCount + e.target.files.length);
+      // image state의 값이 null 인 경우, imageFiles로 대체하고,
+      // 그렇지 않은 경우 기존 image 값을 유지하면서 imageFiles를 추가
+      setImage(image === null ? imageFiles : [...image, ...imageFiles]);
+      console.log(image);
     }
 
     // 이미지 미리보기 코드
@@ -156,6 +158,7 @@ export default function Edit() {
     } else {
       //기존에 업로드 된 이미지 url과 새로 업로드하는 이미지 url을 합쳐서 업데이트
       const allImagesUrl = uploadedUrl.concat(imageUrl);
+
       console.log(imageUrl);
       updateDoc(docRef, {
         title,
@@ -239,6 +242,7 @@ export default function Edit() {
                 <img
                   onClick={() => {
                     setImgFile(imgFile.filter((images) => images !== image));
+                    setImgCount(imgCount - 1);
                   }}
                   id="preview-img"
                   key={index}
@@ -254,6 +258,8 @@ export default function Edit() {
                       setUploadedUrl(
                         uploadedUrl.filter((images) => images !== url)
                       );
+                      setImgCount(imgCount - 1);
+                      console.log(imgCount);
                     }}
                     id="preview-img"
                     key={index}

@@ -12,7 +12,7 @@ export default function Upload() {
   const auth = getAuth();
   const nav = useNavigate();
   const [title, setTitle] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState([]);
   const [price, setPrice] = useState("");
   const [content, setContent] = useState("");
   const [seller, setSeller] = useState("");
@@ -20,6 +20,7 @@ export default function Upload() {
   const [tagValue, setTagValue] = useState("");
   const [tag, setTag] = useState([]);
   const [imgFile, setImgFile] = useState([]);
+  const [imgCount, setImgCount] = useState(0);
 
   const imgRef = useRef();
   const uploadRef = useRef();
@@ -35,14 +36,17 @@ export default function Upload() {
 
   const imageFilesHandler = (e) => {
     const imageFiles = e.target.files;
-    setImage(imageFiles);
+
     console.log(imageFiles);
 
-    if (imageFiles.length > 10) {
+    if (imgCount + imageFiles.length > 10) {
       alert("이미지는 최대 10장 까지 업로드 가능합니다.");
-      setImage(null);
-      e.target.value = null;
+      return;
     } else {
+      setImgCount(imgCount + e.target.files.length);
+      // image state의 값이 null 인 경우, imageFiles로 대체하고,
+      // 그렇지 않은 경우 기존 image 값을 유지하면서 imageFiles를 추가
+      setImage(image === null ? imageFiles : [...image, ...imageFiles]);
     }
 
     // 이미지 미리보기 코드
@@ -182,7 +186,7 @@ export default function Upload() {
             >
               최소 1장의 이미지를 업로드 해주세요.
             </span>
-            <label for="file">
+            <label htmlFor="file">
               <input
                 className="image-upload-input"
                 ref={imgRef}
@@ -194,7 +198,7 @@ export default function Upload() {
                 multiple
                 onChange={imageFilesHandler}
               />
-              <div class="image-upload-btn">이미지 업로드하기</div>
+              <div className="image-upload-btn">이미지 업로드하기</div>
             </label>
 
             <div className="preview-image-box">
@@ -203,6 +207,7 @@ export default function Upload() {
                 <img
                   onClick={() => {
                     setImgFile(imgFile.filter((images) => images !== image));
+                    setImgCount(imgCount - 1);
                   }}
                   id="preview-img"
                   key={index}
