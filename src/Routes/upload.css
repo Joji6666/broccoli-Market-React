@@ -49,8 +49,32 @@
   border-bottom: 1px solid rgb(233, 233, 233);
 }
 
+.image-upload-btn {
+  width: 120px;
+  height: 30px;
+  background: rgb(17, 125, 0);
+  font-size: 15px;
+
+  border-radius: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload-btn:hover {
+  background: yellowgreen;
+  color: rgb(0, 0, 0);
+}
+
+#file {
+  display: none;
+}
+
 .preview-image-box {
   display: flex;
+  overflow-x: scroll;
 }
 
 #preview-img {

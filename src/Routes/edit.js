@@ -1,11 +1,18 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
 import "../style.css";
+import useDidMountEffect from "../usedidmounteffect";
 import "./upload.css";
 export default function Edit() {
   const auth = getAuth();
@@ -20,12 +27,15 @@ export default function Edit() {
   const [tagValue, setTagValue] = useState("");
   const [tag, setTag] = useState([]);
   const [imgFile, setImgFile] = useState([]);
+  const [uploadedUrl, setUploadedUrl] = useState([]);
 
   const imgRef = useRef();
   const uploadRef = useRef();
   const query = new URLSearchParams(window.location.search);
 
   const docRef = doc(db, "product", query.get("id"));
+  const getProduct = getDoc(docRef);
+  const imageUrl = [];
 
   useEffect(() => {
     //로그인 상태 관리 코드
@@ -39,15 +49,32 @@ export default function Edit() {
         nav("/login");
       }
     });
-  }, []);
-
-  useEffect(() => {
-    const getProduct = getDoc(docRef);
     getProduct.then((data) => {
       setProductData(data.data());
       console.log(data.data());
     });
-  }, [sellerUid]);
+  }, []);
+
+  useEffect(() => {
+    if (productData.tag) {
+      productData.tag.map((data) => {
+        setTag((tags) => [...tags, data]);
+      });
+      console.log(tag);
+    }
+
+    if (productData.imageUrl) {
+      productData.imageUrl.map((data) => {
+        setUploadedUrl((images) => [...images, data]);
+        imageUrl.push(data);
+      });
+      console.log(imageUrl);
+      console.log(uploadedUrl);
+      setTitle(productData.title);
+      setContent(productData.content);
+      setPrice(productData.price);
+    }
+  }, [productData]);
 
   const handleClick = () => {
     // tag 배열의 길이가 5보다 작은 경우만 추가
@@ -89,8 +116,6 @@ export default function Edit() {
     }
   };
 
-  const imageUrl = [];
-
   // for of 방식
   const imgUpload = async () => {
     for (const forImage of image) {
@@ -102,6 +127,7 @@ export default function Edit() {
         //파일 url 가져오기
         await getDownloadURL(snapshot.ref).then(async (url) => {
           console.log("업로드 된 경로는", url);
+
           await imageUrl.push(url);
           console.log(imageUrl);
         });
@@ -110,32 +136,58 @@ export default function Edit() {
   };
 
   const setProduct = async () => {
-    console.log(imageUrl);
-    updateDoc(docRef, {
-      title,
-      price,
-      content,
-      imageUrl,
-      seller,
-      sellerUid,
-      like: [],
-      likeUid: [],
-      tag,
-      date: new Date().toString(),
-    }).then((result) => {
-      console.log(result);
-      console.log("수정 완료");
-      alert("수정됐습니다.");
-      nav("/mypage");
-    });
+    if (image === null) {
+      updateDoc(docRef, {
+        title,
+        price,
+        content,
+        imageUrl: uploadedUrl,
+        seller,
+        sellerUid,
+
+        tag,
+        date: new Date().toString(),
+      }).then((result) => {
+        console.log(result);
+        console.log("수정 완료");
+        alert("수정됐습니다.");
+        nav("/mypage");
+      });
+    } else {
+      //기존에 업로드 된 이미지 url과 새로 업로드하는 이미지 url을 합쳐서 업데이트
+      const allImagesUrl = uploadedUrl.concat(imageUrl);
+      console.log(imageUrl);
+      updateDoc(docRef, {
+        title,
+        price,
+        content,
+        imageUrl: allImagesUrl,
+        seller,
+        sellerUid,
+
+        tag,
+        date: new Date().toString(),
+      }).then((result) => {
+        console.log(result);
+        console.log("수정 완료");
+        alert("수정됐습니다.");
+        nav("/mypage");
+      });
+    }
   };
 
   const upload = async () => {
     try {
-      await imgUpload();
+      if (image === null) {
+        uploadRef.current.style = "display:block";
+        setProduct();
+      } else {
+        uploadRef.current.style = "display:block";
+        await imgUpload();
 
-      await setProduct();
-      console.log("업로드완료");
+        await setProduct();
+        console.log("업로드완료");
+      }
     } catch {
       console.log("업로드 실패");
     }
@@ -167,32 +219,49 @@ export default function Edit() {
             >
               최소 1장의 이미지를 업로드 해주세요.
             </span>
-            <input
-              ref={imgRef}
-              accept="image/*"
-              required
-              type="file"
-              id="image"
-              placeholder="이미지를 업로드 해주세요."
-              multiple
-              onChange={imageFilesHandler}
-            />
+            <label for="file">
+              <input
+                className="image-upload-input"
+                ref={imgRef}
+                accept="image/*"
+                required
+                type="file"
+                id="file"
+                placeholder="이미지를 업로드 해주세요."
+                multiple
+                onChange={imageFilesHandler}
+              />
+              <div class="image-upload-btn">이미지 업로드하기</div>
+            </label>
+
             <div className="preview-image-box">
-              {/* imaFile를 순회하며 각 이미지를 렌더링 */}
-              {imgFile.length !== 0 ? (
-                imgFile.map((image, index) => (
-                  <img id="preview-img" key={index} src={image} />
-                ))
-              ) : (
-                <div>
-                  <h3>기존 업로드 된 이미지</h3>
-                  {productData !== ""
-                    ? productData.imageUrl.map((url, index) => (
-                        <img id="preview-img" key={index} src={url} />
-                      ))
-                    : null}
-                </div>
-              )}
+              {imgFile.map((image, index) => (
+                <img
+                  onClick={() => {
+                    setImgFile(imgFile.filter((images) => images !== image));
+                  }}
+                  id="preview-img"
+                  key={index}
+                  src={image}
+                  style={{ cursor: "pointer" }}
+                />
+              ))}
+
+              {uploadedUrl.map((url, index) => {
+                return (
+                  <img
+                    onClick={() => {
+                      setUploadedUrl(
+                        uploadedUrl.filter((images) => images !== url)
+                      );
+                    }}
+                    id="preview-img"
+                    key={index}
+                    src={url}
+                    style={{ cursor: "pointer" }}
+                  />
+                );
+              })}
             </div>
           </div>
           <input
@@ -215,10 +284,24 @@ export default function Edit() {
                 setTagValue(e.target.value);
               }}
             />
-            <span>태그:{productData.price}</span>
+            <span style={{ fontSize: "13px" }}>태그:</span>
+
             <div style={{ display: "flex" }}>
               {tag.map((data, index) => (
-                <div style={{ marginLeft: "2px" }} key={index}>
+                <div
+                  onClick={() => {
+                    setTag(tag.filter((tags) => tags !== data));
+                  }}
+                  style={{
+                    marginLeft: "2px",
+                    fontSize: "13px",
+                    backgroundColor: "gray",
+                    borderRadius: "5px",
+                    padding: "1px",
+                    cursor: "pointer",
+                  }}
+                  key={index}
+                >
                   #{data}
                 </div>
               ))}

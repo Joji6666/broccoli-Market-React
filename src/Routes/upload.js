@@ -182,20 +182,33 @@ export default function Upload() {
             >
               최소 1장의 이미지를 업로드 해주세요.
             </span>
-            <input
-              ref={imgRef}
-              accept="image/*"
-              required
-              type="file"
-              id="image"
-              placeholder="이미지를 업로드 해주세요."
-              multiple
-              onChange={imageFilesHandler}
-            />
+            <label for="file">
+              <input
+                className="image-upload-input"
+                ref={imgRef}
+                accept="image/*"
+                required
+                type="file"
+                id="file"
+                placeholder="이미지를 업로드 해주세요."
+                multiple
+                onChange={imageFilesHandler}
+              />
+              <div class="image-upload-btn">이미지 업로드하기</div>
+            </label>
+
             <div className="preview-image-box">
               {/* imaFile를 순회하며 각 이미지를 렌더링 */}
               {imgFile.map((image, index) => (
-                <img id="preview-img" key={index} src={image} />
+                <img
+                  onClick={() => {
+                    setImgFile(imgFile.filter((images) => images !== image));
+                  }}
+                  id="preview-img"
+                  key={index}
+                  src={image}
+                  style={{ cursor: "pointer" }}
+                />
               ))}
             </div>
           </div>
@@ -218,10 +231,24 @@ export default function Upload() {
                 setTagValue(e.target.value);
               }}
             />
-            <span>태그:</span>
+            <span style={{ fontSize: "13px" }}>태그:</span>
+
             <div style={{ display: "flex" }}>
               {tag.map((data, index) => (
-                <div style={{ marginLeft: "2px" }} key={index}>
+                <div
+                  onClick={() => {
+                    setTag(tag.filter((tags) => tags !== data));
+                  }}
+                  style={{
+                    marginLeft: "2px",
+                    fontSize: "13px",
+                    backgroundColor: "gray",
+                    borderRadius: "5px",
+                    padding: "1px",
+                    cursor: "pointer",
+                  }}
+                  key={index}
+                >
                   #{data}
                 </div>
               ))}
