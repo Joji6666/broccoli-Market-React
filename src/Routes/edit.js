@@ -12,7 +12,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
 import "../style.css";
-
+import logo from "../images/broccoli.png";
 import "./upload.css";
 export default function Edit() {
   const auth = getAuth();
@@ -285,6 +285,7 @@ export default function Edit() {
               required
               type="text"
               id="tag"
+              maxlength="10"
               placeholder="상품과 연관된 태그를 입력해주세요. 최대 5개"
               onChange={(e) => {
                 setTagValue(e.target.value);
@@ -295,16 +296,9 @@ export default function Edit() {
             <div style={{ display: "flex" }}>
               {tag.map((data, index) => (
                 <div
+                  className="tags"
                   onClick={() => {
                     setTag(tag.filter((tags) => tags !== data));
-                  }}
-                  style={{
-                    marginLeft: "2px",
-                    fontSize: "13px",
-                    backgroundColor: "gray",
-                    borderRadius: "5px",
-                    padding: "1px",
-                    cursor: "pointer",
                   }}
                   key={index}
                 >
@@ -312,9 +306,11 @@ export default function Edit() {
                 </div>
               ))}
             </div>
-            <button id="addTag-btn" onClick={handleClick}>
-              태그 추가
-            </button>
+            {tagValue !== "" ? (
+              <button id="addTag-btn" onClick={handleClick}>
+                태그 추가
+              </button>
+            ) : null}
           </div>
           <input
             defaultValue={productData.price}

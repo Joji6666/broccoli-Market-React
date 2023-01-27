@@ -133,12 +133,32 @@ export default function Detail() {
               );
             })}
           </div>
+
           <div className="content-box">
             <span className="content">상품 설명:{productData.content}</span>
             <span className="title">상품명:{productData.title}</span>
 
             <span className="price">상품 가격:{productData.price}</span>
-
+            <span className="tags">
+              태그:
+              {productData
+                ? productData.tag.map((data) => {
+                    return (
+                      <span
+                        style={{
+                          border: "none",
+                          fontSize: "13px",
+                          backgroundColor: "gray",
+                          borderRadius: "5px",
+                          padding: "2px",
+                        }}
+                      >
+                        #{data}
+                      </span>
+                    );
+                  })
+                : null}
+            </span>
             <span className="seller">판매자:{productData.seller}</span>
             <span className="date">작성 날짜:{productData.date}</span>
           </div>

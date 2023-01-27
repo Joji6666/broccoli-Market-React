@@ -258,9 +258,11 @@ export default function Upload() {
                 </div>
               ))}
             </div>
-            <button id="addTag-btn" onClick={handleClick}>
-              태그 추가
-            </button>
+            {tagValue !== "" ? (
+              <button id="addTag-btn" onClick={handleClick}>
+                태그 추가
+              </button>
+            ) : null}
           </div>
           <input
             required

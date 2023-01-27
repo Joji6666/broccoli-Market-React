@@ -83,6 +83,10 @@
   margin: 5px;
 }
 
+#preview-img:hover {
+  opacity: 0.5;
+}
+
 .tag-box {
   width: 50%;
   display: flex;
@@ -94,6 +98,20 @@
   width: 100%;
   font-size: 18px;
 }
+
+.tags {
+  margin-left: 2px;
+  font-size: 13px;
+  background-color: gray;
+  border-radius: 5px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.tags:hover {
+  opacity: 0.5;
+}
+
 #addTag-btn {
   width: 70px;
   height: 20px;
