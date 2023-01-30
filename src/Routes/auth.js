@@ -21,6 +21,13 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handelKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      createUser();
+    }
+  };
+
   //회원가입 코드
   const createUser = async () => {
     await createUserWithEmailAndPassword(auth, email, password)
@@ -77,18 +84,21 @@ export default function Auth() {
               required
               placeholder="이름을 입력해주세요."
               onChange={usernameInput}
+              onKeyPress={handelKeyPress}
             />
             <input
               type="email"
               required
               placeholder="이메일을 입력해주세요."
               onChange={emailInput}
+              onKeyPress={handelKeyPress}
             />
             <input
               type="password"
               required
               placeholder="비밀번호를 입력해주세요."
               onChange={passwordInput}
+              onKeyPress={handelKeyPress}
             />
 
             <button className="auth-btn" onClick={createUser}>

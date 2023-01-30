@@ -13,6 +13,7 @@ import Chat from "./Routes/chat";
 import Mypage from "./Routes/mypage";
 import Edit from "./Routes/edit";
 import Navbar from "./layout/navbar";
+import Search from "./Routes/search";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/chat" element={<Chat />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/edit" element={<Edit />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </div>
   );

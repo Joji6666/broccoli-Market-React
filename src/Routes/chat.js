@@ -91,6 +91,7 @@ export default function Chat() {
         authorUid: userUid,
       });
     });
+    inputRef.current.value = "";
   };
 
   //   const chatRoomRef = collection(db, "chatrooms").doc("chatroom1");
@@ -123,6 +124,15 @@ export default function Chat() {
   }, [chatRoomid]);
 
   const chatRef = useRef();
+  const inputRef = useRef(null);
+  const handelKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+      inputRef.current.value = "";
+      chatRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  };
 
   return (
     <main>
@@ -227,7 +237,12 @@ export default function Chat() {
               );
             })}
             <div>
-              <input className="chat-content" onChange={chatHandler}></input>
+              <input
+                ref={inputRef}
+                className="chat-content"
+                onChange={chatHandler}
+                onKeyPress={handelKeyPress}
+              ></input>
               <button className="send-btn" onClick={sendMessage}>
                 전송
               </button>

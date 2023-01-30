@@ -1,20 +1,26 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
+  arrayRemove,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { ToastContainer } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { db } from "../firebase";
 import "../style.css";
 import "./detail.css";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Detail() {
   const auth = getAuth();
@@ -76,7 +82,9 @@ export default function Detail() {
   //채팅방 컬렉션에 문서 추가 코드
   const joinChatRoom = async () => {
     const queryChatRoom = query(
+      //chatroom 컬렉션안에서
       collection(db, "chatroom"),
+      // user 필드에 내 uid와 판매자uid가 포함된 현재 상품id를 가진 문서를 가져온다,
       where("user", "in", [[sellerUid, userUid]]),
       where("productId", "==", productId)
     );
@@ -117,6 +125,37 @@ export default function Detail() {
     }
   };
 
+  const likehandle = async () => {
+    const productRef = doc(db, "product", productId);
+
+    // 찜 버튼을 누른 product  문서를 가져온다.
+    const getProduct = getDoc(productRef);
+    getProduct.then(async (data) => {
+      const islike = data.data().likeUid;
+
+      //includes 는 배열에서 특정 요소가 있는지 확인한다. 있으면 true 없으면 false를 반환한다.
+      if (islike && islike.includes(userUid)) {
+        await updateDoc(productRef, {
+          // arrayRemove는 배열에 특정 요소를 삭제하는 메소드다.
+          like: arrayRemove(username),
+          likeUid: arrayRemove(userUid),
+        });
+
+        alert("찜이 삭제 됐습니다.");
+        console.log("찜 삭제");
+      } else {
+        await updateDoc(productRef, {
+          // arrayUnion 배열에 요소를 추가하지만 아직 존재하지 않는 요소만 추가한다. 즉 기존의 like,likeUid 필드에 새로운 찜한사람 값을 넣을 수 있는것
+          like: arrayUnion(username),
+          likeUid: arrayUnion(userUid),
+        });
+
+        alert("찜 하였습니다.");
+        console.log("찜목록 추가");
+      }
+    });
+  };
+
   return (
     <>
       <div className="detail-product-container">
@@ -137,15 +176,15 @@ export default function Detail() {
           <div className="content-box">
             <span className="content">상품 설명:{productData.content}</span>
             <span className="title">상품명:{productData.title}</span>
-
-            <span className="price">상품 가격:{productData.price}</span>
-            <span className="tags">
+            <span className="price">상품 가격:{productData.price}원</span>
+            <div style={{ display: "flex", alignItems: "center" }}>
               태그:
               {productData
                 ? productData.tag.map((data) => {
                     return (
                       <span
                         style={{
+                          width: "50px",
                           border: "none",
                           fontSize: "13px",
                           backgroundColor: "gray",
@@ -158,7 +197,7 @@ export default function Detail() {
                     );
                   })
                 : null}
-            </span>
+            </div>
             <span className="seller">판매자:{productData.seller}</span>
             <span className="date">작성 날짜:{productData.date}</span>
           </div>
@@ -184,6 +223,21 @@ export default function Detail() {
             >
               삭제
             </button>
+            <button style={{ backgroundColor: "red" }} onClick={likehandle}>
+              찜하기
+            </button>
+            <ToastContainer
+              position="bottom-center"
+              autoClose={1000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={true}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
           </div>
         </div>
       </div>

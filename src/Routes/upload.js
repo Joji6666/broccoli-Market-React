@@ -24,6 +24,7 @@ export default function Upload() {
 
   const imgRef = useRef();
   const uploadRef = useRef();
+  const tagRef = useRef(null);
 
   const handleClick = () => {
     // tag 배열의 길이가 5보다 작은 경우만 추가
@@ -32,6 +33,8 @@ export default function Upload() {
     } else {
       alert("연관검색어는 최대 5개까지 추가 가능합니다.");
     }
+    tagRef.current.value = "";
+    setTagValue("");
   };
 
   const imageFilesHandler = (e) => {
@@ -228,6 +231,7 @@ export default function Upload() {
           />
           <div className="tag-box">
             <input
+              ref={tagRef}
               required
               type="text"
               id="tag"

@@ -17,6 +17,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handelKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      userLogin();
+    }
+  };
+
   //로그인 코드
   const userLogin = async () => {
     await signInWithEmailAndPassword(auth, email, password)
@@ -61,12 +68,14 @@ export default function Login() {
               required
               placeholder="이메일을 입력해주세요."
               onChange={emailInput}
+              onKeyPress={handelKeyPress}
             />
             <input
               required
               type="password"
               placeholder="비밀번호를 입력해주세요."
               onChange={passwordInput}
+              onKeyPress={handelKeyPress}
             />
 
             <button className="auth-btn" onClick={userLogin}>
