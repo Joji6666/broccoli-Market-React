@@ -5,6 +5,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
+import Navbar from "../layout/navbar";
 import "../style.css";
 import "./upload.css";
 

@@ -25,6 +25,7 @@ export default function Chat() {
   const [chatRoomid, setChatRoomId] = useState("");
   const [chatData, setCahtData] = useState([]);
   const [chatContent, setChatContent] = useState("");
+  const [display, setDisplay] = useState("none");
 
   const nav = useNavigate();
   useEffect(() => {
@@ -122,7 +123,7 @@ export default function Chat() {
 
     console.log(chatData);
   }, [chatRoomid]);
-
+  const listRef = useRef();
   const chatRef = useRef();
   const inputRef = useRef(null);
   const handelKeyPress = (e) => {
@@ -147,7 +148,7 @@ export default function Chat() {
   return (
     <main>
       <div className="chat-container">
-        <div className="chat-list">
+        <div ref={listRef} className="chat-list">
           <h1>채팅 목록</h1>
           {/* 위에서 가져온 내 uid가 포함된 문서들을 반복문을 통해 화면에 보여준다. */}
           {chatroom.map((data) => {
@@ -158,6 +159,8 @@ export default function Chat() {
                     onClick={() => {
                       setChatRoomId(data.id);
                       console.log(chatRoomid);
+                      listRef.current.style.display = "none";
+                      setDisplay("");
                     }}
                     className="chatroom"
                   >
@@ -169,7 +172,30 @@ export default function Chat() {
             );
           })}
         </div>
-        <div className="content-container">
+        <div style={{ margin: "5px", marginLeft: "15px" }}>
+          <button
+            style={{
+              display: display,
+              border: "none",
+              backgroundColor: "green",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              setDisplay("none");
+              listRef.current.style.display = "";
+            }}
+          >
+            <svg
+              style={{ width: "2rem", height: "2rem" }}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+            >
+              <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
+          </button>
+        </div>
+        <div style={{ display: display }} className="content-container">
           <h1>채팅방</h1>
           <div
             ref={chatRef}

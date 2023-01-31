@@ -9,6 +9,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import wishlist from "../wishlist.png";
+import Navbar from "../layout/navbar";
 
 export default function Main() {
   const [product, setProduct] = useState([]);
@@ -68,7 +69,10 @@ export default function Main() {
           <div className="main-3">
             <div className="product-warp">
               <span id="best-product">최고 인기 상품</span>
-              <div className="product-container">
+              <div
+                className="product-container"
+                style={{ height: "1300px", overflowY: "scroll" }}
+              >
                 {/* 0부터 15개의 데이터만 보여준다. */}
                 {product.slice(0, 15).map((data) => {
                   return (
