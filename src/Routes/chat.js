@@ -130,9 +130,19 @@ export default function Chat() {
       e.preventDefault();
       sendMessage();
       inputRef.current.value = "";
-      chatRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   };
+
+  //스코롤 하단 고정 코드
+  const scrollToBottom = () => {
+    if (chatRef) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatData]);
 
   return (
     <main>
@@ -162,6 +172,7 @@ export default function Chat() {
         <div className="content-container">
           <h1>채팅방</h1>
           <div
+            ref={chatRef}
             style={{
               overflowY: "scroll",
               display: "flex",
@@ -175,7 +186,6 @@ export default function Chat() {
                   {console.log(data)}
                   <div className="chat-content-warp">
                     <div
-                      ref={chatRef}
                       className="chat-box"
                       style={
                         userUid == data.authorUid

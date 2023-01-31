@@ -38,7 +38,6 @@ export default function Mypage() {
     );
     const getMyProduct = getDocs(productRef);
     getMyProduct.then((data) => {
-      // 가져온 문서 배열들을 chatroom에 저장
       setMyProduct(data.docs);
       console.log(data.docs);
       console.log(myProduct);
@@ -62,17 +61,11 @@ export default function Mypage() {
   return (
     <>
       <main>
-        <span>마이페이지</span>
         <div className="product-warp">
-          <h1>내 상품</h1>
+          <h1>마이 페이지</h1>
+          <h2>내 상품</h2>
           <div className="product-container">
             {myProduct.map((data) => {
-              // const likeUid = data.data().likeUid;
-              // let wish = "🤍";
-              // if (likeUid && likeUid.includes(userUid)) {
-              //   wish = "❤️";
-              // }
-
               return (
                 <div className="product-box">
                   <Link
@@ -90,18 +83,10 @@ export default function Mypage() {
             })}
           </div>
         </div>
-      </main>
-      <main>
         <div className="product-warp">
-          <h1>내가 찜한 상품</h1>
+          <h1> 찜한 상품</h1>
           <div className="product-container">
             {myWish.map((data) => {
-              // const likeUid = data.data().likeUid;
-              // let wish = "🤍";
-              // if (likeUid && likeUid.includes(userUid)) {
-              //   wish = "❤️";
-              // }
-
               return (
                 <div className="product-box">
                   <Link

@@ -94,7 +94,8 @@ export default function Navbar() {
                 onClick={async () => {
                   await signOut(auth);
                   await alert("로그아웃 되었습니다.");
-                  await window.location.reload();
+                  await setUserUid("");
+                  //   await window.location.reload();
                   await navigate("/");
                 }}
                 style={{ textDecoration: "none" }}

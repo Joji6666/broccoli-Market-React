@@ -177,16 +177,21 @@ export default function Detail() {
             <span className="content">상품 설명:{productData.content}</span>
             <span className="title">상품명:{productData.title}</span>
             <span className="price">상품 가격:{productData.price}원</span>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               태그:
               {productData
                 ? productData.tag.map((data) => {
                     return (
                       <span
                         style={{
-                          width: "50px",
                           border: "none",
-                          fontSize: "13px",
+                          fontSize: "12px",
                           backgroundColor: "gray",
                           borderRadius: "5px",
                           padding: "2px",

@@ -22,14 +22,6 @@ export default function Search(props) {
                 <div>상품명:{data.data().title}</div>
                 <div>상품가격:{data.data().price}</div>
               </Link>
-              <div
-                onClick={() => {
-                  props.setProductId(data.id);
-                }}
-                className="wish"
-              >
-                <img className="wish-logo" src={wishlist} />
-              </div>
             </div>
           );
         })}

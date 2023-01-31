@@ -9,12 +9,12 @@
 
 .main-container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
 .main-1 {
   width: 100%;
-  height: 100%;
+  height: 800px;
   background-color: rgb(220, 245, 221);
   display: flex;
 }
@@ -37,7 +37,7 @@
 }
 .main-2 {
   width: 100%;
-  height: 100%;
+  height: 800px;
   background: url("../../public/images/main1.jpeg") fixed;
   background-size: 100% 100%;
   display: flex;
