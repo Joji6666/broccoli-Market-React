@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import { Link } from "react-router-dom";
 import "../style.css";
 import "./market.css";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserName, setUserUid } from "../store";
 
 export default function Mypage() {
-  const auth = getAuth();
-  const [username, setUserName] = useState("");
-  const [userUid, setUserUid] = useState("");
   const [myProduct, setMyProduct] = useState([]);
   const [myWish, setMyWish] = useState([]);
   const nav = useNavigate();
+  const dispatch = useDispatch();
+  const { username, userUid } = useSelector((state) => state.auth);
 
   useEffect(() => {
     //로그인 상태 관리 코드
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserName(user.displayName);
-        setUserUid(user.uid);
+        dispatch(setUserName(user.displayName));
+        dispatch(setUserUid(user.uid));
         console.log(user);
       } else {
         alert("로그인을 해주세요.");
@@ -76,7 +77,7 @@ export default function Mypage() {
                     <img className="thumbnail" src={data.data().imageUrl[0]} />
 
                     <div>상품명:{data.data().title}</div>
-                    <div>상품가격:{data.data().price}</div>
+                    <div>상품가격:{data.data().price}원</div>
                   </Link>
                 </div>
               );
@@ -97,7 +98,7 @@ export default function Mypage() {
                     <img className="thumbnail" src={data.data().imageUrl[0]} />
 
                     <div>상품명:{data.data().title}</div>
-                    <div>상품가격:{data.data().price}</div>
+                    <div>상품가격:{data.data().price}원</div>
                   </Link>
                 </div>
               );

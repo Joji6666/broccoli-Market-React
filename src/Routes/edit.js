@@ -1,21 +1,14 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { db, storage } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import "../style.css";
-import logo from "../images/broccoli.png";
+
 import "./upload.css";
 export default function Edit() {
-  const auth = getAuth();
   const nav = useNavigate();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
@@ -44,9 +37,6 @@ export default function Edit() {
       if (user) {
         setSeller(user.displayName);
         setSellerUid(user.uid);
-      } else {
-        alert("로그인을 해주세요.");
-        nav("/login");
       }
     });
     getProduct.then((data) => {

@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
-import { app, db } from "../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { app, auth, db } from "../firebase";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,7 +11,6 @@ import "./auth.css";
 import logo from "../images/broccoli.png";
 
 export default function Auth() {
-  const auth = getAuth();
   const nav = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -45,11 +40,13 @@ export default function Auth() {
           await nav("/login");
         });
       })
-      .catch(() => {
+      .catch((err) => {
         if (password.length < 6) {
           passwrodError();
         } else if (email === "") {
           emailError();
+        } else {
+          alert(err);
         }
       });
   };
@@ -75,7 +72,7 @@ export default function Auth() {
             <h1>회원가입</h1>
             <img
               onClick={() => {
-                nav("/main");
+                nav("/");
               }}
               src={logo}
             />

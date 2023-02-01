@@ -1,16 +1,15 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { db, storage } from "../firebase";
-import Navbar from "../layout/navbar";
+import { auth, db, storage } from "../firebase";
+
 import "../style.css";
 import "./upload.css";
 
 export default function Upload() {
-  const auth = getAuth();
   const nav = useNavigate();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState([]);

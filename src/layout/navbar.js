@@ -26,7 +26,7 @@ export default function Navbar() {
         <ul className="navbar-nav">
           <li className="arrow">
             <Link
-              to={"/main"}
+              to={"/"}
               style={{ textDecoration: "none", color: "black" }}
               className="nav-link"
             >
@@ -92,11 +92,12 @@ export default function Navbar() {
             <li className="nav-item" id="chatroom">
               <Link
                 onClick={async () => {
-                  await signOut(auth);
-                  await alert("로그아웃 되었습니다.");
-                  await setUserUid("");
-                  //   await window.location.reload();
-                  await navigate("/");
+                  signOut(auth);
+
+                  setUserUid("");
+                  alert("로그아웃 되었습니다.");
+
+                  navigate("/");
                 }}
                 style={{ textDecoration: "none" }}
                 className="nav-link"

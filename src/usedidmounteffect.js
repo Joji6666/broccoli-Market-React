@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
+
 // 먼저 useRef(false)를 통해 didMount 라는 레퍼런스를 생성하고, false 값을 저장합니다.
 
 // useEffect를 사용하여 컴포넌트가 마운트 또는 업데이트될 때마다 함수가 실행되도록 합니다.

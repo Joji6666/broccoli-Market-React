@@ -14,6 +14,8 @@ import Mypage from "./Routes/mypage";
 import Edit from "./Routes/edit";
 import Navbar from "./layout/navbar";
 import Search from "./Routes/search";
+import Test from "./test";
+import HeadNav from "./layout/headNav";
 
 function App() {
   return (
@@ -22,10 +24,12 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/login" element={<Login />} />
       </Routes>
+      <HeadNav />
       <Navbar />
+
       <Routes>
         <Route path="/" element={<Main />} />
-        <Route path="/main" element={<Main />} />
+        <Route path="/test" element={<Test />} />
         <Route path="/market" element={<Market />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/detail" element={<Detail />} />

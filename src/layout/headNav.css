@@ -1,0 +1,26 @@
+.headNavbar {
+  display: none;
+}
+
+@media only screen and (max-width: 800px) {
+  .headNavbar {
+    top: 0;
+    margin: 0;
+    padding: 0;
+    display: block;
+    display: flex;
+    width: 100vw;
+    height: 3rem;
+    background-color: rgb(239, 239, 239);
+    position: fixed;
+    align-items: center;
+  }
+}
+
+.logo {
+  float: left;
+  width: 2rem;
+  height: 2rem;
+  margin-left: 5%;
+  cursor: pointer;
+}

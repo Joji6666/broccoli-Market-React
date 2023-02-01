@@ -1,4 +1,4 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
   arrayRemove,
@@ -13,36 +13,36 @@ import {
   where,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-bootstrap";
+
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { db } from "../firebase";
+
+import { auth, db } from "../firebase";
 import "../style.css";
 import "./detail.css";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserName, setUserUid } from "../store";
 
 export default function Detail() {
-  const auth = getAuth();
   const [productData, setProductData] = useState("");
   const [productId, setProductId] = useState("");
   const [productImage, setProductImage] = useState([]);
-  const [username, setUserName] = useState("");
-  const [userUid, setUserUid] = useState("");
+
   const [sellerUid, setSellerUid] = useState("");
   const [display, setDisplay] = useState("");
   const [joinChatRoomDisplay, setJoinChatRoomDisplay] = useState("");
-  const [joinChatRoomSwitch, setJoinChatRoomSwitch] = useState(false);
-  const [chatRoomData, setChatRoomData] = useState([]);
 
+  const { username, userUid } = useSelector((state) => state.auth);
   const nav = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     //로그인 상태 관리 코드
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserName(user.displayName);
-        setUserUid(user.uid);
+        dispatch(setUserName(user.displayName));
+        dispatch(setUserUid(user.uid));
         console.log(user);
       }
     });
@@ -64,9 +64,6 @@ export default function Detail() {
       setProductId(data.id);
     });
   }, []);
-  console.log(productImage);
-  console.log(productData);
-  console.log(productId);
 
   useEffect(() => {
     if (userUid == sellerUid) {
@@ -81,37 +78,42 @@ export default function Detail() {
   const q = new URLSearchParams(window.location.search);
   //채팅방 컬렉션에 문서 추가 코드
   const joinChatRoom = async () => {
-    const queryChatRoom = query(
-      //chatroom 컬렉션안에서
-      collection(db, "chatroom"),
-      // user 필드에 내 uid와 판매자uid가 포함된 현재 상품id를 가진 문서를 가져온다,
-      where("user", "in", [[sellerUid, userUid]]),
-      where("productId", "==", productId)
-    );
+    if (userUid) {
+      const queryChatRoom = query(
+        //chatroom 컬렉션안에서
+        collection(db, "chatroom"),
+        // user 필드에 내 uid와 판매자uid가 포함된 현재 상품id를 가진 문서를 가져온다,
+        where("user", "in", [[sellerUid, userUid]]),
+        where("productId", "==", productId)
+      );
 
-    const getChatRoom = getDocs(queryChatRoom);
+      const getChatRoom = getDocs(queryChatRoom);
 
-    await getChatRoom.then((data) => {
-      // 판매자와 내 uid가 포함돼어있는 채팅방이 있으면
-      // data.docs.length는 1이 되므로 채팅방으로 이동한다.
-      // 채팅방이 없으면 채팅방을 생성한다.
-      if (data.docs.length > 0) {
-        console.log("채팅방 존재");
-        nav("/chat");
-      } else {
-        console.log("채팅방 없음");
-        addDoc(collection(db, "chatroom"), {
-          user: [productData.sellerUid, userUid],
-          username: [productData.seller, username],
-          productTitle: productData.title,
-          date: new Date().toString(),
-          productId: q.get("id"),
-        }).then(() => {
-          console.log("채팅방 생성");
+      await getChatRoom.then((data) => {
+        // 판매자와 내 uid가 포함돼어있는 채팅방이 있으면
+        // data.docs.length는 1이 되므로 채팅방으로 이동한다.
+        // 채팅방이 없으면 채팅방을 생성한다.
+        if (data.docs.length > 0) {
+          console.log("채팅방 존재");
           nav("/chat");
-        });
-      }
-    });
+        } else {
+          console.log("채팅방 없음");
+          addDoc(collection(db, "chatroom"), {
+            user: [productData.sellerUid, userUid],
+            username: [productData.seller, username],
+            productTitle: productData.title,
+            date: new Date().toString(),
+            productId: q.get("id"),
+          }).then(() => {
+            console.log("채팅방 생성");
+            nav("/chat");
+          });
+        }
+      });
+    } else {
+      alert("로그인을 해주세요");
+      nav("/login");
+    }
   };
 
   const deleteProduct = () => {
@@ -126,126 +128,124 @@ export default function Detail() {
   };
 
   const likehandle = async () => {
-    const productRef = doc(db, "product", productId);
+    if (userUid) {
+      const productRef = doc(db, "product", productId);
 
-    // 찜 버튼을 누른 product  문서를 가져온다.
-    const getProduct = getDoc(productRef);
-    getProduct.then(async (data) => {
-      const islike = data.data().likeUid;
+      // 찜 버튼을 누른 product  문서를 가져온다.
+      const getProduct = getDoc(productRef);
+      getProduct.then(async (data) => {
+        const islike = data.data().likeUid;
 
-      //includes 는 배열에서 특정 요소가 있는지 확인한다. 있으면 true 없으면 false를 반환한다.
-      if (islike && islike.includes(userUid)) {
-        await updateDoc(productRef, {
-          // arrayRemove는 배열에 특정 요소를 삭제하는 메소드다.
-          like: arrayRemove(username),
-          likeUid: arrayRemove(userUid),
-        });
+        //includes 는 배열에서 특정 요소가 있는지 확인한다. 있으면 true 없으면 false를 반환한다.
+        if (islike && islike.includes(userUid)) {
+          await updateDoc(productRef, {
+            // arrayRemove는 배열에 특정 요소를 삭제하는 메소드다.
+            like: arrayRemove(username),
+            likeUid: arrayRemove(userUid),
+          });
 
-        alert("찜이 삭제 됐습니다.");
-        console.log("찜 삭제");
-      } else {
-        await updateDoc(productRef, {
-          // arrayUnion 배열에 요소를 추가하지만 아직 존재하지 않는 요소만 추가한다. 즉 기존의 like,likeUid 필드에 새로운 찜한사람 값을 넣을 수 있는것
-          like: arrayUnion(username),
-          likeUid: arrayUnion(userUid),
-        });
+          alert("찜이 삭제 됐습니다.");
+          console.log("찜 삭제");
+        } else {
+          await updateDoc(productRef, {
+            // arrayUnion 배열에 요소를 추가하지만 아직 존재하지 않는 요소만 추가한다. 즉 기존의 like,likeUid 필드에 새로운 찜한사람 값을 넣을 수 있는것
+            like: arrayUnion(username),
+            likeUid: arrayUnion(userUid),
+          });
 
-        alert("찜 하였습니다.");
-        console.log("찜목록 추가");
-      }
-    });
+          alert("찜 하였습니다.");
+          console.log("찜목록 추가");
+        }
+      });
+    } else {
+      alert("로그인을 해주세요.");
+      nav("/login");
+    }
   };
 
   return (
     <>
-      <div className="detail-product-container">
-        <h1>상품 상세 페이지</h1>
-        <div className="detail-wrap">
-          <div className="image-container">
-            {productImage.map((data) => {
-              return (
-                <>
-                  <div className="detail-image">
-                    <img src={data} />
-                  </div>
-                </>
-              );
-            })}
-          </div>
-
-          <div className="content-box">
-            <span className="content">상품 설명:{productData.content}</span>
-            <span className="title">상품명:{productData.title}</span>
-            <span className="price">상품 가격:{productData.price}원</span>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              태그:
-              {productData
-                ? productData.tag.map((data) => {
-                    return (
-                      <span
-                        style={{
-                          border: "none",
-                          fontSize: "12px",
-                          backgroundColor: "gray",
-                          borderRadius: "5px",
-                          padding: "2px",
-                        }}
-                      >
-                        #{data}
-                      </span>
-                    );
-                  })
-                : null}
+      <main>
+        <div className="detail-product-container">
+          <h1>상품 상세 페이지</h1>
+          <div className="detail-wrap">
+            <div className="image-container">
+              {productImage.map((data) => {
+                return (
+                  <>
+                    <div className="detail-image">
+                      <img src={data} />
+                    </div>
+                  </>
+                );
+              })}
             </div>
-            <span className="seller">판매자:{productData.seller}</span>
-            <span className="date">작성 날짜:{productData.date}</span>
-          </div>
-          <div className="btn-box">
-            <button
-              className="joinChat-btn"
-              style={{ display: joinChatRoomDisplay }}
-              onClick={joinChatRoom}
-            >
-              채팅
-            </button>
-            <Link
-              style={{ textDecoration: "none" }}
-              to={`/edit?id=${productId}`}
-            >
-              <button style={{ display: display, backgroundColor: "green" }}>
-                수정
+
+            <div className="content-box">
+              <span className="content">상품 설명:{productData.content}</span>
+              <span className="title">상품명:{productData.title}</span>
+              <span className="price">상품 가격:{productData.price}원</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                태그:
+                {productData
+                  ? productData.tag.map((data) => {
+                      return (
+                        <span
+                          style={{
+                            border: "none",
+                            fontSize: "12px",
+                            backgroundColor: "gray",
+                            borderRadius: "5px",
+                            padding: "2px",
+                          }}
+                        >
+                          #{data}
+                        </span>
+                      );
+                    })
+                  : null}
+              </div>
+              <span className="seller">판매자:{productData.seller}</span>
+              <span className="date">작성 날짜:{productData.date}</span>
+            </div>
+            <div className="btn-box">
+              <button
+                className="joinChat-btn"
+                style={{ display: joinChatRoomDisplay }}
+                onClick={joinChatRoom}
+              >
+                채팅
               </button>
-            </Link>
-            <button
-              onClick={deleteProduct}
-              style={{ display: display, backgroundColor: "red" }}
-            >
-              삭제
-            </button>
-            <button style={{ backgroundColor: "red" }} onClick={likehandle}>
-              찜하기
-            </button>
-            <ToastContainer
-              position="bottom-center"
-              autoClose={1000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={true}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="colored"
-            />
+              <Link
+                style={{ textDecoration: "none" }}
+                to={`/edit?id=${productId}`}
+              >
+                <button style={{ display: display, backgroundColor: "green" }}>
+                  수정
+                </button>
+              </Link>
+              <button
+                onClick={deleteProduct}
+                style={{ display: display, backgroundColor: "red" }}
+              >
+                삭제
+              </button>
+              <button
+                style={{ backgroundColor: "red", cursor: "pointer" }}
+                onClick={likehandle}
+              >
+                찜
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

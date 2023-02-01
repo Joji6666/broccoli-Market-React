@@ -1,4 +1,4 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   arrayRemove,
   arrayUnion,
@@ -6,34 +6,38 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
   query,
   updateDoc,
-  where,
 } from "firebase/firestore";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import "../style.css";
 import "./market.css";
 import useDidMountEffect from "../usedidmounteffect";
 import "react-toastify/dist/ReactToastify.css";
 import wishlist from "../wishlist.png";
 
-import { Route } from "react-router-dom";
-import { Routes } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Search from "./search";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserName, setUserUid } from "../store";
+
+import { setFilteredProduct } from "../store";
+import HeadNav from "../layout/headNav";
 
 export default function Market() {
   const [product, setProduct] = useState([]);
   const [productId, setProductId] = useState("");
-  const auth = getAuth();
-  const [username, setUserName] = useState("");
-  const [userUid, setUserUid] = useState("");
+
   const [serachTag, setSerachTag] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const { filteredProduct } = useSelector((state) => state.filteredProduct);
+  const { username, userUid } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const nav = useNavigate();
 
@@ -41,17 +45,25 @@ export default function Market() {
     //로그인 상태 관리 코드
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserName(user.displayName);
-        setUserUid(user.uid);
+        dispatch(setUserName(user.displayName));
+        dispatch(setUserUid(user.uid));
         console.log(user);
       }
     });
   }, []);
 
   useEffect(() => {
-    getDocs(collection(db, "product")).then((data) => {
+    // product 시간순 정렬 후 가져오기
+    const productRef = collection(db, "product");
+    const q = query(productRef, orderBy("date", "asc"));
+
+    getDocs(q).then((data) => {
       setProduct(data.docs);
     });
+
+    // getDocs(collection(db, "product")).then((data) => {
+    //   setProduct(data.docs);
+    // });
   }, [userUid]);
 
   useDidMountEffect(async () => {
@@ -92,7 +104,7 @@ export default function Market() {
 
   const handleSearch = async () => {
     // filteredProducts를 갱신하는 코드
-    const filteredProduct = product.filter((p) => {
+    const filteredProducts = product.filter((p) => {
       //tag 가 존재하거나 상품제목이 검색어와 일치하면 필터링
       if (p.data().tag || p.data().title) {
         return (
@@ -105,26 +117,58 @@ export default function Market() {
         );
       }
     });
-    await setFilteredProducts(filteredProduct);
 
-    await console.log(filteredProducts);
+    await dispatch(setFilteredProduct(filteredProducts));
+    console.log(filteredProduct);
+    await console.log(filteredProduct);
   };
 
+  const handelKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
   const search = async () => {
     await handleSearch();
-    console.log(filteredProducts);
+    console.log(filteredProduct);
 
-    console.log(filteredProducts);
+    console.log(filteredProduct);
   };
 
   return (
     <>
       <main>
-        {filteredProducts.length > 0 ? (
-          <Search
-            setProductId={setProductId}
-            filteredProducts={filteredProducts}
-          />
+        {filteredProduct.length > 0 ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <button
+              style={{
+                border: "none",
+                backgroundColor: "green",
+                borderRadius: "5px",
+                cursor: "pointer",
+                margin: "10px",
+              }}
+              onClick={() => {
+                dispatch(setFilteredProduct([]));
+              }}
+            >
+              <svg
+                className="backArrow"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+              >
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+              </svg>
+            </button>
+
+            <Search />
+          </div>
         ) : (
           <div className="product-warp">
             <h1>상품 목록</h1>
@@ -143,6 +187,7 @@ export default function Market() {
                 onChange={(e) => {
                   setSerachTag(e.target.value);
                 }}
+                onKeyPress={handelKeyPress}
               ></input>
 
               <button className="search-btn" onClick={search}>
@@ -150,40 +195,6 @@ export default function Market() {
               </button>
             </div>
 
-            <div>
-              {filteredProducts.length > 0 ? (
-                <div className="product-container">
-                  {filteredProducts.map((data) => {
-                    console.log(data);
-                    return (
-                      <div className="product-box">
-                        <Link
-                          style={{ textDecoration: "none", color: "black" }}
-                          className="detail-nav"
-                          to={`/detail?id=${data.id}`}
-                        >
-                          <img
-                            className="thumbnail"
-                            src={data.data().imageUrl[0]}
-                          />
-
-                          <div>상품명:{data.data().title}</div>
-                          <div>상품가격:{data.data().price}</div>
-                        </Link>
-                        <div
-                          onClick={() => {
-                            setProductId(data.id);
-                          }}
-                          className="wish"
-                        >
-                          <img className="wish-logo" src={wishlist} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : null}
-            </div>
             <div className="product-container">
               {product.map((data) => {
                 return (
@@ -199,7 +210,7 @@ export default function Market() {
                       />
 
                       <div>상품명:{data.data().title}</div>
-                      <div>상품가격:{data.data().price}</div>
+                      <div>상품가격:{data.data().price}원</div>
                     </Link>
                     <div
                       onClick={() => {

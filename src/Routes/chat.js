@@ -11,29 +11,32 @@ import {
   where,
 } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import useDidMountEffect from "../usedidmounteffect";
 import "../style.css";
 import "./chat.css";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserName, setUserUid } from "../store";
 
 export default function Chat() {
-  const auth = getAuth();
-  const [username, setUserName] = useState("");
-  const [userUid, setUserUid] = useState("");
   const [chatroom, setChatRoom] = useState([]);
   const [chatRoomid, setChatRoomId] = useState("");
   const [chatData, setCahtData] = useState([]);
   const [chatContent, setChatContent] = useState("");
   const [display, setDisplay] = useState("none");
 
+  const { username, userUid } = useSelector((state) => state.auth);
   const nav = useNavigate();
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     //로그인 상태 관리 코드
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserName(user.displayName);
-        setUserUid(user.uid);
+        dispatch(setUserName(user.displayName));
+        dispatch(setUserUid(user.uid));
         console.log(user);
       } else {
         alert("로그인을 해주세요.");
@@ -94,14 +97,6 @@ export default function Chat() {
     });
     inputRef.current.value = "";
   };
-
-  //   const chatRoomRef = collection(db, "chatrooms").doc("chatroom1");
-  // const query = collection(chatRoomRef, "messages");
-  // const snapshot = getDocs(query);
-
-  // snapshot.then((data) => {
-  //     console.log(data.docs);
-  // });
 
   useDidMountEffect(async () => {
     //messages 컬렉션까지 접근

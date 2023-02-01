@@ -123,14 +123,15 @@
 }
 
 #upload-btn {
-  width: 70px;
-  height: 40px;
+  width: 90px;
+  height: 100px;
   border-radius: 10px;
   background-color: green;
   color: white;
   font-weight: bold;
   cursor: pointer;
   margin-bottom: 10px;
+  font-size: 24px;
 }
 
 .uploading-box {
@@ -278,14 +279,15 @@
   }
 
   #upload-btn {
-    width: 70px;
-    height: 40px;
+    width: 80px;
+    height: 90px;
     border-radius: 10px;
     background-color: green;
     color: white;
     font-weight: bold;
     cursor: pointer;
     margin-bottom: 10px;
+    font-size: 16px;
   }
 
   .uploading-box {

@@ -9,9 +9,9 @@ import { useNavigate } from "react-router-dom";
 import "./auth.css";
 import "../style.css";
 import logo from "../images/broccoli.png";
+import { auth } from "../firebase";
 
 export default function Login() {
-  const auth = getAuth();
   const nav = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -29,7 +29,7 @@ export default function Login() {
     await signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
         alert("로그인 됐습니다.");
-        nav("/main");
+        nav("/");
       })
       .catch((err) => {
         if (password.length < 6) {
@@ -59,7 +59,7 @@ export default function Login() {
             <h1>로그인</h1>
             <img
               onClick={() => {
-                nav("/main");
+                nav("/");
               }}
               src={logo}
             />
