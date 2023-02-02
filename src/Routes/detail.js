@@ -104,6 +104,7 @@ export default function Detail() {
             productTitle: productData.title,
             date: new Date().toString(),
             productId: q.get("id"),
+            imageUrl: productImage[0],
           }).then(() => {
             console.log("채팅방 생성");
             nav("/chat");

@@ -25,34 +25,39 @@ export default function Auth() {
 
   //회원가입 코드
   const createUser = async () => {
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then((result) => {
-        const userData = {
-          username,
-          email,
-        };
+    if (username === "") {
+      nameError();
+    } else {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          const userData = {
+            username,
+            email,
+          };
 
-        //         저장할 컬렉션 이름  생성할 문서 이름    문서에 담을 내용
-        setDoc(doc(db, "user", result.user.uid), userData).then(async () => {
-          updateProfile(result.user, { displayName: username });
-          console.log(result.user);
-          alert("회원가입이 완료됐습니다.");
-          await nav("/login");
+          //         저장할 컬렉션 이름  생성할 문서 이름    문서에 담을 내용
+          setDoc(doc(db, "user", result.user.uid), userData).then(async () => {
+            updateProfile(result.user, { displayName: username });
+            console.log(result.user);
+            alert("회원가입이 완료됐습니다.");
+            await nav("/login");
+          });
+        })
+        .catch((err) => {
+          if (password.length < 6) {
+            passwrodError();
+          } else if (email === "") {
+            emailError();
+          } else {
+            alert(err);
+          }
         });
-      })
-      .catch((err) => {
-        if (password.length < 6) {
-          passwrodError();
-        } else if (email === "") {
-          emailError();
-        } else {
-          alert(err);
-        }
-      });
+    }
   };
 
   const passwrodError = () => toast.error("비밀먼호를 6자 이상 입력해주세요.");
   const emailError = () => toast.error("이메일을 확인해주세요.");
+  const nameError = () => toast.error("이름을 확인해주세요.");
 
   const usernameInput = (e) => {
     setUsername(e.target.value);

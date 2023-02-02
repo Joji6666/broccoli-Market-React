@@ -41,6 +41,23 @@
   margin: 10px;
 }
 
+.chatroom {
+  height: 5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.titleImage {
+  margin-left: 15px;
+  width: 50px;
+  height: 50px;
+}
+
+.chatInfo {
+  margin-left: 5px;
+}
+
 .chat-content {
   background-color: rgba(120, 176, 57, 0.5);
   border-radius: 20px;

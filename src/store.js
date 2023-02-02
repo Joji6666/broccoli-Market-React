@@ -25,6 +25,10 @@ const authSlice = createSlice({
   },
 });
 
+// const uploadSlice = createSlice({
+//   name:""
+// })
+
 const filteredProductSlice = createSlice({
   name: "filteredProduct",
   initialState: {

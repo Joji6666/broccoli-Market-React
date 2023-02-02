@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";

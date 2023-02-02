@@ -159,8 +159,16 @@ export default function Chat() {
                     }}
                     className="chatroom"
                   >
-                    <div>상품이름:{data.data().productTitle}</div>
-                    <div>판매자:{data.data().username}</div>
+                    <div>
+                      <img className="titleImage" src={data.data().imageUrl} />
+                    </div>
+                    <div className="chatInfo">
+                      <div>상품이름:{data.data().productTitle}</div>
+                      <div>
+                        채팅 참가자:{data.data().username[0]},
+                        {data.data().username[1]}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

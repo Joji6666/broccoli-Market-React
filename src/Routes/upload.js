@@ -52,21 +52,45 @@ export default function Upload() {
       setImage(image === null ? imageFiles : [...image, ...imageFiles]);
     }
 
-    // 이미지 미리보기 코드
-    // imageFiles를 반복문으로 순회하며 각 파일들을 읽어들임
+    // // 이미지 미리보기 코드
+    // // imageFiles를 반복문으로 순회하며 각 파일들을 읽어들임
+    // for (let i = 0; i < imageFiles.length; i++) {
+    //   const file = imageFiles[i];
+
+    //   const reader = new FileReader();
+
+    //   // 파일 읽기 시작
+    //   reader.readAsDataURL(file);
+
+    //   // onloadend 이벤트 핸들러를 설정, 이미지를 읽어들인 후 imgFile를 업데이트
+
+    //   reader.onloadend = () => {
+
+    //     //         result 에는 readAsDataURL을 이용하여 가져온 값이 들어있다.
+    //     setImgFile((prevImages) => [...prevImages, newImages[i]]);
+    //   };
+    // }
     for (let i = 0; i < imageFiles.length; i++) {
+      // 반복문으로 각 이미지 파일에 대해 아래의 작업을 수행
       const file = imageFiles[i];
-
+      // 현재 반복문에서 처리할 이미지 파일
       const reader = new FileReader();
+      // FileReader 객체를 생성
 
-      // 파일 읽기 시작
       reader.readAsDataURL(file);
-
-      // onloadend 이벤트 핸들러를 설정, 이미지를 읽어들인 후 imgFile를 업데이트
+      // 이미지 파일을 URL 형식의 문자열로 변환
 
       reader.onloadend = () => {
-        //         result 에는 readAsDataURL을 이용하여 가져온 값이 들어있다.
-        setImgFile((prevImages) => [...prevImages, reader.result]);
+        // 변환이 완료되면 onloadend 이벤트가 발생하고 아래의 콜백 함수 실행
+        setImgFile((prevImages) => {
+          // setImgFile 함수를 사용해서 imgFile 배열을 업데이트
+          const newImages = [...prevImages];
+          // prevImages의 복사본을 생성
+          newImages[i] = reader.result;
+          // 현재 반복문에서 변환한 이미지 URL을 newImages 배열에 해당 인덱스에 저장
+          return newImages;
+          // 업데이트된 newImages 배열을 반환
+        });
       };
     }
   };
@@ -248,14 +272,7 @@ export default function Upload() {
                   onClick={() => {
                     setTag(tag.filter((tags) => tags !== data));
                   }}
-                  style={{
-                    marginLeft: "2px",
-                    fontSize: "13px",
-                    backgroundColor: "gray",
-                    borderRadius: "5px",
-                    padding: "1px",
-                    cursor: "pointer",
-                  }}
+                  className="tags"
                   key={index}
                 >
                   #{data}
