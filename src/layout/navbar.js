@@ -8,15 +8,12 @@ export default function Navbar() {
   const auth = getAuth();
 
   const navigate = useNavigate();
-  const [username, setUserName] = useState("");
   const [userUid, setUserUid] = useState("");
   useEffect(() => {
     //로그인 상태 관리 코드
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserName(user.displayName);
         setUserUid(user.uid);
-        console.log(user);
       }
     });
   }, []);

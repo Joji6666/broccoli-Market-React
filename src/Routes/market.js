@@ -1,45 +1,25 @@
 import { onAuthStateChanged } from "firebase/auth";
-import {
-  arrayRemove,
-  arrayUnion,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import { toast } from "react-toastify";
+
 import { auth, db } from "../firebase";
 import "../style.css";
 import "./market.css";
-import useDidMountEffect from "../usedidmounteffect";
+
 import "react-toastify/dist/ReactToastify.css";
-import wishlist from "../wishlist.png";
-
-import { useNavigate } from "react-router-dom";
-import Search from "./search";
+import Search from "../componets/search";
 import { useSelector, useDispatch } from "react-redux";
-import { setUserName, setUserUid } from "../store";
-
-import { setFilteredProduct } from "../store";
-import HeadNav from "../layout/headNav";
+import { setUserName, setUserUid, setFilteredProduct } from "../store";
+import { handelKeyPress } from "../utils/utils";
+import ProductBox from "../componets/productBox";
 
 export default function Market() {
   const [product, setProduct] = useState([]);
-  const [productId, setProductId] = useState("");
 
   const [serachTag, setSerachTag] = useState("");
-
   const { filteredProduct } = useSelector((state) => state.filteredProduct);
-  const { username, userUid } = useSelector((state) => state.auth);
+  const { userUid } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
-  const nav = useNavigate();
 
   useEffect(() => {
     //로그인 상태 관리 코드
@@ -60,47 +40,43 @@ export default function Market() {
     getDocs(q).then((data) => {
       setProduct(data.docs);
     });
-
-    // getDocs(collection(db, "product")).then((data) => {
-    //   setProduct(data.docs);
-    // });
   }, [userUid]);
 
-  useDidMountEffect(async () => {
-    const productRef = doc(db, "product", productId);
+  // useDidMountEffect(async () => {
+  //   const productRef = doc(db, "product", productId);
 
-    // 찜 버튼을 누른 product  문서를 가져온다.
-    const getProduct = getDoc(productRef);
-    getProduct.then(async (data) => {
-      const islike = data.data().likeUid;
+  //   // 찜 버튼을 누른 product  문서를 가져온다.
+  //   const getProduct = getDoc(productRef);
+  //   getProduct.then(async (data) => {
+  //     const islike = data.data().likeUid;
 
-      //includes 는 배열에서 특정 요소가 있는지 확인한다. 있으면 true 없으면 false를 반환한다.
-      if (islike && islike.includes(userUid)) {
-        await updateDoc(productRef, {
-          // arrayRemove는 배열에 특정 요소를 삭제하는 메소드다.
-          like: arrayRemove(username),
-          likeUid: arrayRemove(userUid),
-        });
+  //     //includes 는 배열에서 특정 요소가 있는지 확인한다. 있으면 true 없으면 false를 반환한다.
+  //     if (islike && islike.includes(userUid)) {
+  //       await updateDoc(productRef, {
+  //         // arrayRemove는 배열에 특정 요소를 삭제하는 메소드다.
+  //         like: arrayRemove(username),
+  //         likeUid: arrayRemove(userUid),
+  //       });
 
-        toast.success("찜이 삭제 됐습니다.");
-        console.log("찜 삭제");
-      } else {
-        await updateDoc(productRef, {
-          // arrayUnion 배열에 요소를 추가하지만 아직 존재하지 않는 요소만 추가한다. 즉 기존의 like,likeUid 필드에 새로운 찜한사람 값을 넣을 수 있는것
-          like: arrayUnion(username),
-          likeUid: arrayUnion(userUid),
-        });
+  //       toast.success("찜이 삭제 됐습니다.");
+  //       console.log("찜 삭제");
+  //     } else {
+  //       await updateDoc(productRef, {
+  //         // arrayUnion 배열에 요소를 추가하지만 아직 존재하지 않는 요소만 추가한다. 즉 기존의 like,likeUid 필드에 새로운 찜한사람 값을 넣을 수 있는것
+  //         like: arrayUnion(username),
+  //         likeUid: arrayUnion(userUid),
+  //       });
 
-        toast.success("찜 하였습니다.");
-        console.log("찜목록 추가");
-      }
-    });
-    await setProductId("");
+  //       toast.success("찜 하였습니다.");
+  //       console.log("찜목록 추가");
+  //     }
+  //   });
+  //   await setProductId("");
 
-    return () => {
-      setProductId(productId);
-    };
-  }, [productId]);
+  //   return () => {
+  //     setProductId(productId);
+  //   };
+  // }, [productId]);
 
   const handleSearch = async () => {
     // filteredProducts를 갱신하는 코드
@@ -119,20 +95,10 @@ export default function Market() {
     });
 
     await dispatch(setFilteredProduct(filteredProducts));
-    console.log(filteredProduct);
-    await console.log(filteredProduct);
   };
 
-  const handelKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
   const search = async () => {
     await handleSearch();
-    console.log(filteredProduct);
-
-    console.log(filteredProduct);
   };
 
   return (
@@ -187,7 +153,7 @@ export default function Market() {
                 onChange={(e) => {
                   setSerachTag(e.target.value);
                 }}
-                onKeyPress={handelKeyPress}
+                onKeyPress={(e) => handelKeyPress(e, handleSearch)}
               ></input>
 
               <button className="search-btn" onClick={search}>
@@ -196,45 +162,13 @@ export default function Market() {
             </div>
 
             <div className="product-container">
-              {product.map((data) => {
-                return (
-                  <div className="product-box">
-                    <Link
-                      style={{ textDecoration: "none", color: "black" }}
-                      className="detail-nav"
-                      to={`/detail?id=${data.id}`}
-                    >
-                      <img
-                        className="thumbnail"
-                        src={data.data().imageUrl[0]}
-                      />
-
-                      <div>상품명:{data.data().title}</div>
-                      <div>상품가격:{data.data().price}원</div>
-                    </Link>
-                    <div
-                      onClick={() => {
-                        setProductId(data.id);
-                      }}
-                      className="wish"
-                    >
-                      <img className="wish-logo" src={wishlist} />
-                    </div>
-                  </div>
-                );
-              })}
-              <ToastContainer
-                position="bottom-center"
-                autoClose={1000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={true}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-              />
+              {product && product.length > 0 ? (
+                product.map((data) => {
+                  return <ProductBox data={data} />;
+                })
+              ) : (
+                <h1>상품 불러오는중...</h1>
+              )}
             </div>
           </div>
         )}

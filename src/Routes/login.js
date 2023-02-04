@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { ToastContainer } from "react-toastify";
@@ -10,19 +10,14 @@ import "./auth.css";
 import "../style.css";
 import logo from "../images/broccoli.png";
 import { auth } from "../firebase";
+import { useSelector, useDispatch } from "react-redux";
+import { setEmail, setPassword } from "../store";
+import { handelKeyPress } from "../utils/utils";
 
 export default function Login() {
   const nav = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handelKeyPress = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      userLogin();
-    }
-  };
+  const dispatch = useDispatch();
+  const { email, password } = useSelector((state) => state.auth);
 
   //로그인 코드
   const userLogin = async () => {
@@ -44,11 +39,8 @@ export default function Login() {
   const passwrodError = () => toast.error("비밀먼호를 6자 이상 입력해주세요.");
   const emailError = () => toast.error("이메일을 확인해주세요.");
 
-  const emailInput = (e) => {
-    setEmail(e.target.value);
-  };
-  const passwordInput = (e) => {
-    setPassword(e.target.value);
+  const handleInput = (e, setState) => {
+    dispatch(setState(e.target.value));
   };
 
   return (
@@ -67,15 +59,15 @@ export default function Login() {
               type="email"
               required
               placeholder="이메일을 입력해주세요."
-              onChange={emailInput}
-              onKeyPress={handelKeyPress}
+              onChange={(e) => handleInput(e, setEmail)}
+              onKeyPress={(e) => handelKeyPress(e, userLogin)}
             />
             <input
               required
               type="password"
               placeholder="비밀번호를 입력해주세요."
-              onChange={passwordInput}
-              onKeyPress={handelKeyPress}
+              onChange={(e) => handleInput(e, setPassword)}
+              onKeyPress={(e) => handelKeyPress(e, userLogin)}
             />
 
             <button className="auth-btn" onClick={userLogin}>

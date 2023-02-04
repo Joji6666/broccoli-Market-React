@@ -1,35 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+
 import { collection, getDocs, query, where } from "firebase/firestore";
 
-import { auth, db } from "../firebase";
+import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import "../style.css";
 import "./market.css";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+
+import { useSelector } from "react-redux";
+
+import { useAuth } from "../utils/utils";
 import { setUserName, setUserUid } from "../store";
+import ProductBox from "../componets/productBox";
 
 export default function Mypage() {
   const [myProduct, setMyProduct] = useState([]);
   const [myWish, setMyWish] = useState([]);
-  const nav = useNavigate();
-  const dispatch = useDispatch();
+
   const { username, userUid } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    //로그인 상태 관리 코드
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(setUserName(user.displayName));
-        dispatch(setUserUid(user.uid));
-        console.log(user);
-      } else {
-        alert("로그인을 해주세요.");
-        nav("/login");
-      }
-    });
-  }, []);
+  useAuth(setUserName, setUserUid);
 
   useEffect(() => {
     //product 컬렉션에서 sellerUid가  userUid와 같은  문서들을 가져온다.
@@ -40,8 +30,6 @@ export default function Mypage() {
     const getMyProduct = getDocs(productRef);
     getMyProduct.then((data) => {
       setMyProduct(data.docs);
-      console.log(data.docs);
-      console.log(myProduct);
     });
 
     const wishRef = query(
@@ -50,7 +38,6 @@ export default function Mypage() {
     );
 
     getDocs(wishRef).then((data) => {
-      console.log(data.docs);
       setMyWish(data.docs);
     });
 
@@ -63,7 +50,7 @@ export default function Mypage() {
     <>
       <main>
         <div className="product-warp">
-          <h1>마이 페이지</h1>
+          <h1>{username}의 마이 페이지</h1>
           <h2>내 상품</h2>
           <div className="product-container">
             {myProduct.map((data) => {
@@ -88,20 +75,7 @@ export default function Mypage() {
           <h1> 찜한 상품</h1>
           <div className="product-container">
             {myWish.map((data) => {
-              return (
-                <div className="product-box">
-                  <Link
-                    style={{ textDecoration: "none", color: "black" }}
-                    className="detail-nav"
-                    to={`/detail?id=${data.id}`}
-                  >
-                    <img className="thumbnail" src={data.data().imageUrl[0]} />
-
-                    <div>상품명:{data.data().title}</div>
-                    <div>상품가격:{data.data().price}원</div>
-                  </Link>
-                </div>
-              );
+              return <ProductBox data={data} />;
             })}
           </div>
         </div>

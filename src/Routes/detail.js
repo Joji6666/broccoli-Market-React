@@ -28,11 +28,8 @@ export default function Detail() {
   const [productData, setProductData] = useState("");
   const [productId, setProductId] = useState("");
   const [productImage, setProductImage] = useState([]);
-
-  const [sellerUid, setSellerUid] = useState("");
   const [display, setDisplay] = useState("");
   const [joinChatRoomDisplay, setJoinChatRoomDisplay] = useState("");
-
   const { username, userUid } = useSelector((state) => state.auth);
   const nav = useNavigate();
   const dispatch = useDispatch();
@@ -60,13 +57,12 @@ export default function Detail() {
       console.log(data.data());
       setProductData(data.data());
       setProductImage(data.data().imageUrl);
-      setSellerUid(data.data().sellerUid);
       setProductId(data.id);
     });
   }, []);
 
   useEffect(() => {
-    if (userUid == sellerUid) {
+    if (userUid == productData.sellerUid) {
       setDisplay("inline");
       setJoinChatRoomDisplay("none");
     } else {
@@ -83,7 +79,7 @@ export default function Detail() {
         //chatroom 컬렉션안에서
         collection(db, "chatroom"),
         // user 필드에 내 uid와 판매자uid가 포함된 현재 상품id를 가진 문서를 가져온다,
-        where("user", "in", [[sellerUid, userUid]]),
+        where("user", "in", [[productData.sellerUid, userUid]]),
         where("productId", "==", productId)
       );
 

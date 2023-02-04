@@ -1,50 +1,21 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
-import { auth, db } from "../firebase";
-import useDidMountEffect from "../usedidmounteffect";
+import { db } from "../firebase";
 import "../style.css";
 import "./chat.css";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import Chating from "../componets/chating";
+import { useAuth } from "../utils/utils";
 import { setUserName, setUserUid } from "../store";
 
 export default function Chat() {
   const [chatroom, setChatRoom] = useState([]);
   const [chatRoomid, setChatRoomId] = useState("");
-  const [chatData, setCahtData] = useState([]);
-  const [chatContent, setChatContent] = useState("");
   const [display, setDisplay] = useState("none");
 
   const { username, userUid } = useSelector((state) => state.auth);
-  const nav = useNavigate();
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    //로그인 상태 관리 코드
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(setUserName(user.displayName));
-        dispatch(setUserUid(user.uid));
-        console.log(user);
-      } else {
-        alert("로그인을 해주세요.");
-        nav("/login");
-      }
-    });
-  }, []);
-
+  useAuth(setUserName, setUserUid);
   useEffect(() => {
     //chatroom 컬렉션에서 userUid가 포함돼있는 문서들을 가져온다.
     const queryChatRoom = query(
@@ -58,87 +29,12 @@ export default function Chat() {
       console.log(data.docs);
     });
 
-    console.log(chatroom);
-    console.log(userUid);
-    console.log(chatroom.id);
-    console.log(chatRoomid);
-
     //userUid가 업데이트 후 훅이 실행되게 설정
     // userUid 값을 받은 후 훅이  실행되어야 쿼리를 제대로 할 수 있다
     // userUid가 업데이트 되지 않은 상태로 훅이 실행하면 data.docs는 빈 배열이 된다. user에 userUid와 같은 문서가 없기 때문
   }, [userUid]);
 
-  const chatHandler = (e) => {
-    setChatContent(e.target.value);
-  };
-
-  //채팅 메세지를 파이어스토어 db에 전송하는 코드
-  const sendMessage = async () => {
-    //chatroon 컬렉션에 현재 설정된 chatRoomid를 참조하는법
-    //chatroom 지역을 클릭하면 setChatRoomid를 이용하여 chatRoomid가 설정된다.
-    const docRef = await doc(db, "chatroom", chatRoomid);
-
-    await getDoc(docRef).then(async (snapshot) => {
-      //Firestore에서 필드는 문서로 치지 않는다.
-      //문서는 데이터를 가지고 있는 것이고 필드는 문서에 포함된 데이터를 구성하는 것이다.
-      //예를 들어, 가져온 문서에서 name, age, address라는 필드가 있다면, 그것들은 그 문서에 포함된 데이터를 구성하는 것이다.
-
-      //messages 컬렉션이 존재하지않으면 messages 컬렉션을 만듬과 동시에 문서를 추가한다.
-
-      //문서에 데이터를 처음 추가할 때 암묵적으로 컬렉션과 문서를 생성한다.
-      //이를 이용하여 chatroom에 하위 컬렉션으로 messages를 만들고 문서를 생성할 수 있다.
-
-      const messageRef = await addDoc(collection(docRef, "messages"), {
-        content: chatContent,
-        author: username,
-        date: new Date().toString(),
-        authorUid: userUid,
-      });
-    });
-    inputRef.current.value = "";
-  };
-
-  useDidMountEffect(async () => {
-    //messages 컬렉션까지 접근
-    const chatRoomRef = collection(db, "chatroom");
-    const chatRoomDoc = doc(chatRoomRef, chatRoomid);
-    const messagesRef = collection(chatRoomDoc, "messages");
-
-    //시간으로 정렬
-    const q = query(messagesRef, orderBy("date", "asc"));
-
-    // 실시간으로 messages 컬렉션에 있는 문서들을 가져온다.
-    onSnapshot(q, async (data) => {
-      // 그 후 그 배열들을 state에 넣는다.
-      setCahtData(data.docs.map((doc) => doc.data()));
-    });
-
-    console.log(chatData);
-    console.log(chatRoomid);
-
-    console.log(chatData);
-  }, [chatRoomid]);
   const listRef = useRef();
-  const chatRef = useRef();
-  const inputRef = useRef(null);
-  const handelKeyPress = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
-      inputRef.current.value = "";
-    }
-  };
-
-  //스코롤 하단 고정 코드
-  const scrollToBottom = () => {
-    if (chatRef) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    }
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [chatData]);
 
   return (
     <main>
@@ -198,96 +94,12 @@ export default function Chat() {
             </svg>
           </button>
         </div>
-        <div style={{ display: display }} className="content-container">
-          <h1>채팅방</h1>
-          <div
-            ref={chatRef}
-            style={{
-              overflowY: "scroll",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            {chatData.map((data) => {
-              const date = new Date(data.date);
-              return (
-                <>
-                  {console.log(data)}
-                  <div className="chat-content-warp">
-                    <div
-                      className="chat-box"
-                      style={
-                        userUid == data.authorUid
-                          ? { float: "right" }
-                          : { float: "left" }
-                      }
-                      id={data.authorUid}
-                    >
-                      <div
-                        style={
-                          userUid == data.authorUid
-                            ? {
-                                float: "right",
-                                marginTop: "5px",
-                                marginLeft: "5px",
-                              }
-                            : {
-                                float: "left",
-                                marginTop: "5px",
-                                marginRight: "5px",
-                              }
-                        }
-                      >
-                        {data.author}
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        {userUid == data.authorUid ? (
-                          <div style={{ fontSize: "12px", marginRight: "2px" }}>
-                            {date.getHours()}:{date.getMinutes()}
-                          </div>
-                        ) : null}
-
-                        <div
-                          style={
-                            userUid == data.authorUid
-                              ? {
-                                  backgroundColor: "green",
-                                  borderRadius: "5px",
-                                  padding: "5px",
-                                }
-                              : {
-                                  backgroundColor: "gray",
-                                  borderRadius: "5px",
-                                  padding: "5px",
-                                }
-                          }
-                        >
-                          {data.content}
-                        </div>
-                        {userUid != data.authorUid ? (
-                          <div style={{ fontSize: "12px", marginRight: "2px" }}>
-                            {date.getHours()}:{date.getMinutes()}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              );
-            })}
-            <div>
-              <input
-                ref={inputRef}
-                className="chat-content"
-                onChange={chatHandler}
-                onKeyPress={handelKeyPress}
-              ></input>
-              <button className="send-btn" onClick={sendMessage}>
-                전송
-              </button>
-            </div>
-          </div>
-        </div>
+        <Chating
+          username={username}
+          userUid={userUid}
+          chatRoomid={chatRoomid}
+          display={display}
+        />
       </div>
     </main>
   );

@@ -7,16 +7,14 @@ import mainPhotoCard from "../images/main1-1.png";
 import mainPhotoCard2 from "../images/main1-2.png";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import { Link } from "react-router-dom";
-import wishlist from "../wishlist.png";
-import Navbar from "../layout/navbar";
+import ProductBox from "../componets/productBox";
 
 export default function Main() {
   const [product, setProduct] = useState([]);
 
   useEffect(() => {
     getDocs(collection(db, "product")).then(async (data) => {
-      let products = data.docs;
+      const products = data.docs;
       // getDocs로 가져온 product doc들을 sort를 이용하여 like수가 많은순으로 정렬
       await products.sort(
         (a, b) => b.data().like.length - a.data().like.length
@@ -75,29 +73,7 @@ export default function Main() {
               >
                 {/* 0부터 15개의 데이터만 보여준다. */}
                 {product.slice(0, 15).map((data) => {
-                  return (
-                    <>
-                      <div className="product-box">
-                        <Link
-                          style={{ textDecoration: "none", color: "black" }}
-                          className="detail-nav"
-                          to={`/detail?id=${data.id}`}
-                        >
-                          <img
-                            className="thumbnail"
-                            src={data.data().imageUrl[0]}
-                          />
-
-                          <div>상품명:{data.data().title}</div>
-                          <div>상품가격:{data.data().price}</div>
-                        </Link>
-                        <div>
-                          <img className="wish-logo" src={wishlist} />:
-                          {data.data().like.length}
-                        </div>
-                      </div>
-                    </>
-                  );
+                  return <ProductBox data={data} />;
                 })}
               </div>
             </div>
