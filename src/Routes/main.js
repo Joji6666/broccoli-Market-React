@@ -6,11 +6,18 @@ import "./market.css";
 import mainPhotoCard from "../images/main1-1.png";
 import mainPhotoCard2 from "../images/main1-2.png";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import ProductBox from "../componets/productBox";
+import { onAuthStateChanged } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { setUserName, setUserUid } from "../store";
+import { useAuth } from "../utils/utils";
 
 export default function Main() {
   const [product, setProduct] = useState([]);
+  const dispatch = useDispatch();
+
+  useAuth();
 
   useEffect(() => {
     getDocs(collection(db, "product")).then(async (data) => {

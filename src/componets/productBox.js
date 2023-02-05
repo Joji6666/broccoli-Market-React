@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "../Routes/market.css";
-import LikeBtn from "../utils/likeBtn";
+import LikeBtn from "./likeBtn";
 
 export default function ProductBox(props) {
   return (

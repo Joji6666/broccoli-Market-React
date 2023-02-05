@@ -23,6 +23,7 @@ import "./detail.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserName, setUserUid } from "../store";
+import { useAuth } from "../utils/utils";
 
 export default function Detail() {
   const [productData, setProductData] = useState("");
@@ -34,16 +35,7 @@ export default function Detail() {
   const nav = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    //로그인 상태 관리 코드
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(setUserName(user.displayName));
-        dispatch(setUserUid(user.uid));
-        console.log(user);
-      }
-    });
-  }, []);
+  useAuth();
 
   useEffect(() => {
     //              market 컴포넌트에서 Link를 이용하여 url에 업로드 된 문서의 id를 입력받도록했다.

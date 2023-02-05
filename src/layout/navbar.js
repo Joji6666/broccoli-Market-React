@@ -1,22 +1,21 @@
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import { getAuth, signOut } from "firebase/auth";
+import React from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { setUserUid } from "../store";
+import { useAuth } from '../utils/utils';
 import "./navbar.css";
 
 export default function Navbar() {
   const auth = getAuth();
-
+  const { userUid } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const [userUid, setUserUid] = useState("");
-  useEffect(() => {
-    //로그인 상태 관리 코드
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserUid(user.uid);
-      }
-    });
-  }, []);
+  const dispatch = useDispatch();
+
+  useAuth()
+
   return (
     <>
       <nav className="navbar">
@@ -85,16 +84,15 @@ export default function Navbar() {
               <span className="nav-text">업로드</span>
             </Link>
           </li>
-          {userUid ? (
+          {userUid != "" ? (
             <li className="nav-item" id="chatroom">
               <Link
                 onClick={async () => {
-                  signOut(auth);
+                  await signOut(auth);
+                  await dispatch(setUserUid(""));
+                  await alert("로그아웃 되었습니다.");
 
-                  setUserUid("");
-                  alert("로그아웃 되었습니다.");
-
-                  navigate("/");
+                  await navigate("/");
                 }}
                 style={{ textDecoration: "none" }}
                 className="nav-link"

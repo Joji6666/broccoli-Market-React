@@ -12,9 +12,9 @@ import { auth, db, storage } from "../firebase";
 import {
   setContent,
   setPrice,
-  setSeller,
-  setSellerUid,
   setTitle,
+  setUserName,
+  setUserUid,
 } from "../store";
 import "../style.css";
 import "./upload.css";
@@ -28,9 +28,8 @@ export default function Edit() {
   const [uploadedUrl, setUploadedUrl] = useState([]);
   const [imgCount, setImgCount] = useState(0);
 
-  const { seller, sellerUid, title, price, content } = useSelector(
-    (state) => state.uploadData
-  );
+  const { title, price, content } = useSelector((state) => state.uploadData);
+  const { username, userUid } = useSelector((state) => state.auth);
 
   const query = new URLSearchParams(window.location.search);
   const uploadRef = useRef();
@@ -43,8 +42,8 @@ export default function Edit() {
     //로그인 상태 관리 코드
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        dispatch(setSeller(user.displayName));
-        dispatch(setSellerUid(user.uid));
+        dispatch(setUserName(user.displayName));
+        dispatch(setUserUid(user.uid));
       }
     });
     getProduct.then((data) => {
@@ -97,8 +96,8 @@ export default function Edit() {
         price,
         content,
         imageUrl: uploadedUrl,
-        seller,
-        sellerUid,
+        seller: username,
+        sellerUid: userUid,
 
         tag,
         date: new Date().toString(),
@@ -118,8 +117,8 @@ export default function Edit() {
         price,
         content,
         imageUrl: allImagesUrl,
-        seller,
-        sellerUid,
+        seller: username,
+        sellerUid: userUid,
 
         tag,
         date: new Date().toString(),

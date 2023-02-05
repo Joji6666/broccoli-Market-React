@@ -6,7 +6,7 @@ import "./chat.css";
 import { useSelector } from "react-redux";
 import Chating from "../componets/chating";
 import { useAuth } from "../utils/utils";
-import { setUserName, setUserUid } from "../store";
+import { useNavigate } from "react-router-dom";
 
 export default function Chat() {
   const [chatroom, setChatRoom] = useState([]);
@@ -14,8 +14,15 @@ export default function Chat() {
   const [display, setDisplay] = useState("none");
 
   const { username, userUid } = useSelector((state) => state.auth);
+  const nav = useNavigate();
 
-  useAuth(setUserName, setUserUid);
+  if (userUid == "") {
+    alert("로그인을 해주세요.");
+    nav("/login");
+  }
+
+  useAuth();
+
   useEffect(() => {
     //chatroom 컬렉션에서 userUid가 포함돼있는 문서들을 가져온다.
     const queryChatRoom = query(

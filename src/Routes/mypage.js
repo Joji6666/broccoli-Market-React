@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
-
 import { collection, getDocs, query, where } from "firebase/firestore";
-
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import "../style.css";
 import "./market.css";
-
 import { useSelector } from "react-redux";
-
 import { useAuth } from "../utils/utils";
-import { setUserName, setUserUid } from "../store";
+
 import ProductBox from "../componets/productBox";
+import { useNavigate } from "react-router-dom";
 
 export default function Mypage() {
   const [myProduct, setMyProduct] = useState([]);
   const [myWish, setMyWish] = useState([]);
-
   const { username, userUid } = useSelector((state) => state.auth);
+  const nav = useNavigate();
 
-  useAuth(setUserName, setUserUid);
+  if (userUid == "") {
+    alert("로그인을 해주세요.");
+    nav("/login");
+  }
+  useAuth();
 
   useEffect(() => {
     //product 컬렉션에서 sellerUid가  userUid와 같은  문서들을 가져온다.

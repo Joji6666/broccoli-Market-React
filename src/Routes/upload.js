@@ -7,7 +7,6 @@ import ImgUploadInput from "../componets/imgUploadInput";
 import UploadingBar from "../componets/uploadingBar";
 import UploadInput from "../componets/uploadInput";
 import { db, storage } from "../firebase";
-import { setSeller, setSellerUid } from "../store";
 
 import "../style.css";
 import { useAuth } from "../utils/utils";
@@ -21,11 +20,15 @@ export default function Upload() {
   const [imgCount, setImgCount] = useState(0);
   const uploadRef = useRef();
 
-  const { seller, sellerUid, title, price, content } = useSelector(
-    (state) => state.uploadData
-  );
+  const { title, price, content } = useSelector((state) => state.uploadData);
 
-  useAuth(setSeller, setSellerUid);
+  const { username, userUid } = useSelector((state) => state.auth);
+
+  if (userUid == "") {
+    alert("로그인을 해주세요.");
+    nav("/login");
+  }
+  useAuth();
 
   const imageUrl = [];
 
@@ -54,12 +57,12 @@ export default function Upload() {
       price,
       content,
       imageUrl,
-      seller,
-      sellerUid,
+      seller: username,
+      sellerUid: userUid,
       like: [],
       likeUid: [],
       tag,
-      date: new Date().toString(),
+      date: new Date().toLocaleString(),
     }).then((result) => {
       console.log(result);
       console.log("업로드완료");

@@ -9,8 +9,8 @@ import "./market.css";
 import "react-toastify/dist/ReactToastify.css";
 import Search from "../componets/search";
 import { useSelector, useDispatch } from "react-redux";
-import { setUserName, setUserUid, setFilteredProduct } from "../store";
-import { handelKeyPress } from "../utils/utils";
+import { setFilteredProduct } from "../store";
+import { handelKeyPress, useAuth } from "../utils/utils";
 import ProductBox from "../componets/productBox";
 
 export default function Market() {
@@ -21,16 +21,7 @@ export default function Market() {
   const { userUid } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    //로그인 상태 관리 코드
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(setUserName(user.displayName));
-        dispatch(setUserUid(user.uid));
-        console.log(user);
-      }
-    });
-  }, []);
+  useAuth();
 
   useEffect(() => {
     // product 시간순 정렬 후 가져오기
@@ -41,42 +32,6 @@ export default function Market() {
       setProduct(data.docs);
     });
   }, [userUid]);
-
-  // useDidMountEffect(async () => {
-  //   const productRef = doc(db, "product", productId);
-
-  //   // 찜 버튼을 누른 product  문서를 가져온다.
-  //   const getProduct = getDoc(productRef);
-  //   getProduct.then(async (data) => {
-  //     const islike = data.data().likeUid;
-
-  //     //includes 는 배열에서 특정 요소가 있는지 확인한다. 있으면 true 없으면 false를 반환한다.
-  //     if (islike && islike.includes(userUid)) {
-  //       await updateDoc(productRef, {
-  //         // arrayRemove는 배열에 특정 요소를 삭제하는 메소드다.
-  //         like: arrayRemove(username),
-  //         likeUid: arrayRemove(userUid),
-  //       });
-
-  //       toast.success("찜이 삭제 됐습니다.");
-  //       console.log("찜 삭제");
-  //     } else {
-  //       await updateDoc(productRef, {
-  //         // arrayUnion 배열에 요소를 추가하지만 아직 존재하지 않는 요소만 추가한다. 즉 기존의 like,likeUid 필드에 새로운 찜한사람 값을 넣을 수 있는것
-  //         like: arrayUnion(username),
-  //         likeUid: arrayUnion(userUid),
-  //       });
-
-  //       toast.success("찜 하였습니다.");
-  //       console.log("찜목록 추가");
-  //     }
-  //   });
-  //   await setProductId("");
-
-  //   return () => {
-  //     setProductId(productId);
-  //   };
-  // }, [productId]);
 
   const handleSearch = async () => {
     // filteredProducts를 갱신하는 코드
